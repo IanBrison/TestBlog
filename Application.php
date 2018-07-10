@@ -1,8 +1,8 @@
 <?php
 
-class MiniBlogApplication extends Application {
+class Application extends BravelApplication {
 
-    protected $login_action = array('account', 'signin');
+    protected $login_action = array();
 
     public function getRootDir() {
         return dirname(__FILE__);
