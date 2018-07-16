@@ -6,7 +6,7 @@ use Core\Controller\Controller;
 
 class AccountController extends Controller {
 
-    public function signupAction() {
+    public function signup() {
         $values = array(
             '_token' => $this->generateCsrfToken('account/signup')
         );
