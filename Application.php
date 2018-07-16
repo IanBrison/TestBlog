@@ -12,8 +12,8 @@ class Application extends BravelApplication {
 
     protected function registerRoutes() {
         return array(
-            '/account' => array('controller' => 'account', 'action' => 'index'),
-            '/account/:action' => array('controller' => 'account')
+            '/account' => array('controller' => 'AccountController', 'action' => 'index'),
+            '/account/:action' => array('controller' => 'AccountController')
         );
     }
 }
