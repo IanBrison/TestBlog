@@ -1,5 +1,7 @@
 <?php
 
+namespace Core\Session;
+
 class Session {
 
     protected static $sessionStarted = false;

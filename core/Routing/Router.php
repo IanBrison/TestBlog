@@ -1,5 +1,7 @@
 <?php
 
+namespace Core\Routing;
+
 class Router {
 
     protected $routes;
