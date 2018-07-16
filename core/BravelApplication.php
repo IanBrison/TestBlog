@@ -79,12 +79,12 @@ abstract class BravelApplication {
         return 'App\\Controllers\\';
     }
 
-    public function getViewDirNamespace() {
-        return 'App\\Views\\';
-    }
-
     public function getModelDirNamespace() {
         return 'App\\Models\\';
+    }
+
+    public function getViewDir() {
+        return $thit->getRootDir() . '/presentation/views';
     }
 
     public function getWebDir() {
@@ -113,7 +113,7 @@ abstract class BravelApplication {
     }
 
     public function runAction($controller_name, $action, $params = array()) {
-        $controller_class = $this->getControllerDirNamespace . $controller_name;
+        $controller_class = $this->getControllerDirNamespace() . $controller_name;
 
         $controller = new $controller_class($this);
         if ($controller === false) {
