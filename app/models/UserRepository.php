@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Models;
+
+use Core\Database\DbRepository;
+
 class UserRepository extends DbRepository {
 
     public function insert($user_name, $password) {
