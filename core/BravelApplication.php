@@ -39,7 +39,7 @@ abstract class BravelApplication {
         $this->request = new Request();
         $this->response = new Response();
         $this->session = new Session();
-        $this->db_manager = new DbManager();
+        $this->db_manager = new DbManager($this->getRepositoryDirNamespace(), $this->getDaoDirNamespace());
         $this->router = new Router($this->registerRoutes());
     }
 
@@ -81,6 +81,18 @@ abstract class BravelApplication {
 
     public function getModelDirNamespace() {
         return 'App\\Models\\';
+    }
+
+    public function getEntityDirNamespace() {
+        return 'App\\Models\\Entity\\';
+    }
+
+    public function getRepositoryDirNamespace() {
+        return 'App\\Repositories\\';
+    }
+
+    public function getDaoDirNamespace() {
+        return 'App\\Repositories\\Dao\\';
     }
 
     public function getViewDir() {
