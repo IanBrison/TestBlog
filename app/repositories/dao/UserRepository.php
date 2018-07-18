@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Dao;
 
+use \DateTime;
 use Core\Database\Dao;
 use App\Repositories\UserRepository as BaseUserRepository;
 
