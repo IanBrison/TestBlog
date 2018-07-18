@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use Core\Controller\Controller;
+use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
 
@@ -34,7 +35,7 @@ class AccountController extends Controller {
             $errors[] = 'ユーザIDを入力してください';
         } else if (!preg_match('/^\w{3,20}$/', $user_name)) {
             $errors[] = 'ユーザIDは半角英数字およびアンダースコアを3~20文字いないで入力してください';
-        } else if (!$this->db_manager->get('User')->isUniqueUserName($user_name)) {
+        } else if (!$this->db_manager->get(UserRepository::class)->isUniqueUserName($user_name)) {
             $errors[] = 'ユーザIDは既に使用されています';
         }
 
@@ -45,10 +46,10 @@ class AccountController extends Controller {
         }
 
         if (count($errors) === 0) {
-            $this->db_manager->get('User')->insert($user_name, $password);
+            $this->db_manager->get(UserRepository::class)->insert($user_name, $password);
             $this->session->setAuthenticated(true);
 
-            $user = $this->db_manager->get('User')->fetchByUserName($user_name);
+            $user = $this->db_manager->get(UserRepository::class)->fetchByUserName($user_name);
             $this->session->set('user', $user);
 
             return $this->redirect('/');
