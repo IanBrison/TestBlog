@@ -3,6 +3,7 @@
 namespace Core;
 
 use Core\Environment\Environment;
+use Core\Di\DiContainer as Di;
 use Core\Request\Request;
 use Core\Response\Response;
 use Core\Session\Session;
@@ -18,6 +19,7 @@ abstract class BravelApplication {
     protected $response;
     protected $session;
     protected $db_manager;
+    protected $router;
 
     public function __construct($debug = false) {
         $this->setDebugMode($debug);
@@ -38,42 +40,22 @@ abstract class BravelApplication {
 
     protected function initialize() {
         Environment::setConfigPath($this->getConfigDir());
-        $this->request = new Request();
-        $this->response = new Response();
-        $this->session = new Session();
-        $this->db_manager = new DbManager($this->getRepositoryDirNamespace(), $this->getDaoDirNamespace());
-        $this->router = new Router($this->registerRoutes());
-    }
-
-    protected function configure() {
-        $pdo_infos = Environment::getConfig('database');
-        foreach ($pdo_infos as $connection_name => $pdo_info) {
-            $this->db_manager->connect($connection_name, $pdo_info);
-        }
+        Di::initialize();
+        $this->request = Di::get(Request::class);
+        $this->response = Di::get(Response::class);
+        $this->session = Di::get(Session::class);
+        $this->db_manager = Di::get(DbManager::class, $this->getRepositoryDirNamespace(), $this->getDaoDirNamespace());
+        $this->router = Di::get(Router::class, $this->registerRoutes());
     }
 
     abstract public function getRootDir();
 
     abstract protected function registerRoutes();
 
+    abstract protected function configure();
+
     public function isDebugMode() {
         return $this->debug;
-    }
-
-    public function getRequest() {
-        return $this->request;
-    }
-
-    public function getResponse() {
-        return $this->response;
-    }
-
-    public function getSession() {
-        return $this->session;
-    }
-
-    public function getDbManager() {
-        return $this->db_manager;
     }
 
     public function getControllerDirNamespace() {

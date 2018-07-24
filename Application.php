@@ -16,4 +16,6 @@ class Application extends BravelApplication {
             '/account/:action' => array('controller' => 'AccountController')
         );
     }
+
+    protected function configure() {}
 }
