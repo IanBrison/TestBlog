@@ -2,7 +2,11 @@
 
 namespace App\Controllers;
 
+use Core\Di\DiContainer as Di;
+use Core\Session\Session;
+use Core\Request\Request;
 use Core\Controller\Controller;
+use Core\Database\DbManager;
 use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
@@ -17,17 +21,19 @@ class AccountController extends Controller {
     }
 
     public function register() {
-        if (!$this->request->isPost()) {
+        $request = Di::get(Request::class);
+        $db_manager = Di::get(DbManager::class);
+        if (!$request->isPost()) {
             $this->forward404();
         }
 
-        $token = $this->request->getPost('_token');
+        $token = $request->getPost('_token');
         if (!$this->checkCsrfToken('account/signup', $token)) {
             return $this->redirect('/account/signup');
         }
 
-        $user_name = $this->request->getPost('user_name');
-        $password = $this->request->getPost('password');
+        $user_name = $request->getPost('user_name');
+        $password = $request->getPost('password');
 
         $errors = array();
 
@@ -35,7 +41,7 @@ class AccountController extends Controller {
             $errors[] = 'ユーザIDを入力してください';
         } else if (!preg_match('/^\w{3,20}$/', $user_name)) {
             $errors[] = 'ユーザIDは半角英数字およびアンダースコアを3~20文字いないで入力してください';
-        } else if (!$this->db_manager->get(UserRepository::class)->isUniqueUserName($user_name)) {
+        } else if (!$db_manager->get(UserRepository::class)->isUniqueUserName($user_name)) {
             $errors[] = 'ユーザIDは既に使用されています';
         }
 
@@ -46,11 +52,12 @@ class AccountController extends Controller {
         }
 
         if (count($errors) === 0) {
-            $this->db_manager->get(UserRepository::class)->insert($user_name, $password);
-            $this->session->setAuthenticated(true);
+            $session = Di::get(Session::class);
+            $db_manager->get(UserRepository::class)->insert($user_name, $password);
+            $session->setAuthenticated(true);
 
-            $user = $this->db_manager->get(UserRepository::class)->fetchByUserName($user_name);
-            $this->session->set('user', $user);
+            $user = $db_manager->get(UserRepository::class)->fetchByUserName($user_name);
+            $session->set('user', $user);
 
             return $this->redirect('/');
         }
