@@ -6,7 +6,8 @@ use Core\Environment\Environment;
 use Core\Di\DiContainer as Di;
 use Core\Request\Request;
 use Core\Response\Response;
-use Core\Session\Session;
+use Core\Response\StatusCode;
+use Core\Response\Content as ResponseContent;
 use Core\Database\DbManager;
 use Core\Routing\Router;
 use Core\View\View;
@@ -16,10 +17,6 @@ use Core\Exceptions\UnauthorizedActionException;
 abstract class BravelApplication {
 
     protected $debug = false;
-    protected $request;
-    protected $response;
-    protected $session;
-    protected $router;
 
     public function __construct($debug = false) {
         $this->setDebugMode($debug);
@@ -27,6 +24,11 @@ abstract class BravelApplication {
         $this->configure();
     }
 
+    /*
+     * set to debug mode to stacktrace the errors when something occurs
+     *
+     * don't forget to unset it in production environment
+     */
     public function setDebugMode($debug) {
         if ($debug) {
             $this->debug = true;
@@ -47,61 +49,58 @@ abstract class BravelApplication {
     protected function initialize() {
         Environment::setConfigPath($this->getConfigDir());
         Di::initialize();
-        $this->request = Di::get(Request::class);
-        $this->response = Di::get(Response::class);
-        $this->session = Di::get(Session::class);
-        $this->router = Di::get(Router::class, $this->registerRoutes());
         Di::set(DbManager::class, new DbManager($this->getRepositoryDirNamespace(), $this->getDaoDirNamespace()));
         Di::set(View::class, new View($this->getViewDir()));
     }
 
-    abstract public function getRootDir();
+    abstract public function getRootDir(): string;
 
-    abstract protected function registerRoutes();
+    abstract protected function registerRoutes(): array;
 
     abstract protected function configure();
 
-    public function isDebugMode() {
+    public function isDebugMode(): bool {
         return $this->debug;
     }
 
-    public function getControllerDirNamespace() {
+    public function getControllerDirNamespace(): string {
         return 'App\\Controllers\\';
     }
 
-    public function getModelDirNamespace() {
+    public function getModelDirNamespace(): string {
         return 'App\\Models\\';
     }
 
-    public function getEntityDirNamespace() {
+    public function getEntityDirNamespace(): string {
         return 'App\\Models\\Entity\\';
     }
 
-    public function getRepositoryDirNamespace() {
+    public function getRepositoryDirNamespace(): string {
         return 'App\\Repositories\\';
     }
 
-    public function getDaoDirNamespace() {
+    public function getDaoDirNamespace(): string {
         return 'App\\Repositories\\Dao\\';
     }
 
-    public function getViewDir() {
+    public function getViewDir(): string {
         return $this->getRootDir() . '/presentation/views';
     }
 
-    public function getConfigDir() {
+    public function getConfigDir(): string {
         return $this->getRootDir() . '/config';
     }
 
-    public function getWebDir() {
-        return $this->getRootDir() . '/app/web';
+    public function getWebDir(): string {
+        return $this->getRootDir() . '/web';
     }
 
     public function run() {
         try {
-            $params = $this->router->resolve($this->request->getPathInfo());
+            $request = Di::get(Request::class);
+            $params = Di::get(Router::class, $this->registerRoutes())->resolve($request->getPathInfo());
             if ($params === false) {
-                throw new HttpNotFoundException('No route found for ' . $this->request->getPathInfo());
+                throw new HttpNotFoundException('No route found for ' . $request->getPathInfo());
             }
 
             $controller = $params['controller'];
@@ -115,7 +114,7 @@ abstract class BravelApplication {
             $this->runAction($controller, $action);
         }
 
-        $this->response->send();
+        Di::get(Response::class)->send();
     }
 
     public function runAction($controller_name, $action, $params = array()) {
@@ -128,15 +127,15 @@ abstract class BravelApplication {
 
         $content = $controller->run($action, $params);
 
-        $this->response->setContent($content);
+        Di::set(ResponseContent::class, new ResponseContent($content));
     }
 
     protected function render404Page($e) {
-        $this->response->setStatusCode(404, 'Not Found');
+        Di::set(StatusCode::class, new StatusCode(404, 'Not Found'));
         $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
         $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
 
-        $this->response->setContent(<<<EOF
+        Di::set(ResponseContent::class, new ResponseContent(<<<EOF
 <!DOCTYPE html>
 <html>
 <head>
@@ -148,6 +147,6 @@ abstract class BravelApplication {
 </body>
 </html>
 EOF
-        );
+        ));
     }
 }
