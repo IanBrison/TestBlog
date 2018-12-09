@@ -6,7 +6,6 @@ use Core\Di\DiContainer as Di;
 use Core\Session\Session;
 use Core\Request\Request;
 use Core\Controller\Controller;
-use Core\Datasource\DbManager;
 use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
@@ -30,7 +29,7 @@ class AccountController extends Controller {
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
 
-        $user = Di::get(DbManager::class)->get(UserRepository::class)->attemptSignin($user_name, $password);
+        $user = Di::get(UserRepository::class)->attemptSignin($user_name, $password);
         if ($user === false) {
             return $this->redirect('/account/signin');
         }
@@ -52,7 +51,6 @@ class AccountController extends Controller {
 
     public function register() {
         $request = Di::get(Request::class);
-        $db_manager = Di::get(DbManager::class);
         if (!$request->isPost()) {
             $this->forward404();
         }
@@ -71,7 +69,7 @@ class AccountController extends Controller {
             $errors[] = 'ユーザIDを入力してください';
         } else if (!preg_match('/^\w{3,20}$/', $user_name)) {
             $errors[] = 'ユーザIDは半角英数字およびアンダースコアを3~20文字いないで入力してください';
-        } else if (!$db_manager->get(UserRepository::class)->isUniqueUserName($user_name)) {
+        } else if (!Di::get(UserRepository::class)->isUniqueUserName($user_name)) {
             $errors[] = 'ユーザIDは既に使用されています';
         }
 
@@ -83,10 +81,10 @@ class AccountController extends Controller {
 
         if (count($errors) === 0) {
             $session = Di::get(Session::class);
-            $db_manager->get(UserRepository::class)->insert($user_name, $password);
+            Di::get(UserRepository::class)->insert($user_name, $password);
             $session->setAuthenticated(true);
 
-            $user = $db_manager->get(UserRepository::class)->fetchByUserName($user_name);
+            $user = Di::get(UserRepository::class)->fetchByUserName($user_name);
             $session->set('user', $user);
 
             return $this->redirect('/');
