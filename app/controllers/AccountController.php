@@ -6,7 +6,7 @@ use Core\Di\DiContainer as Di;
 use Core\Session\Session;
 use Core\Request\Request;
 use Core\Controller\Controller;
-use Core\Database\DbManager;
+use Core\Datasource\DbManager;
 use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
