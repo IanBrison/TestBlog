@@ -9,4 +9,6 @@ interface UserRepository {
     public function fetchByUserName($user_name);
 
     public function isUniqueUserName($user_name);
+
+    public function attemptSignin($user_name, $password);
 }

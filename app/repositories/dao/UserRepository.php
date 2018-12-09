@@ -38,6 +38,18 @@ class UserRepository extends Dao implements BaseUserRepository{
         return false;
     }
 
+    public function attemptSignin($user_name, $password) {
+        $password = $this->hashPassword($password);
+
+        $sql = "SELECT * from user WHERE user_name = :user_name AND password = :password";
+        $row = $this->fetch($sql, array(':user_name' => $user_name, ':password' => $password));
+        if (empty($row['user_name'])) {
+            return false;
+        }
+
+        return $row;
+    }
+
     protected function hashPassword($password) {
         return sha1($password . 'SecretKey');
     }

@@ -11,6 +11,36 @@ use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
 
+    protected $auth_actions = array('index');
+
+    public function index() {
+        return 'hello';
+    }
+
+    public function signin() {
+        $request = Di::get(Request::class);
+        if (!$request->isPost()) {
+            $values = array(
+                'user_name' => '',
+                '_token'    => $this->generateCsrfToken('account/signin')
+            );
+            return $this->render($values, 'account/signin');
+        }
+
+        $user_name = $request->getPost('user_name');
+        $password = $request->getPost('password');
+
+        $user = Di::get(DbManager::class)->get(UserRepository::class)->attemptSignin($user_name, $password);
+        if ($user === false) {
+            return $this->redirect('/account/signin');
+        }
+
+        $session = Di::get(Session::class);
+        $session->set('user', $user);
+        $session->setAuthenticated(true);
+        return $this->redirect('/account');
+    }
+
     public function signup() {
         $values = array(
             'user_name' => '',
