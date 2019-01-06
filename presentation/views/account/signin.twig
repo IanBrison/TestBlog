@@ -1,0 +1,40 @@
+{% extends "layout.twig" %}
+
+{% block title %}ログイン{% endblock %}
+
+{% block content %}
+<h2>ログイン</h2>
+
+<form action="{{ base_url }}/account/signin" method="POST">
+    <input type="hidden" name="_token" value="{{ _token|e }}" />
+
+    {% if errors is defined and errors|length > 0 %}
+        <ul class="error_list">
+            {% for error in errors %}
+                <li>{{ error|e }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <table>
+        <tbody>
+            <tr>
+                <th>ユーザID</th>
+                <td>
+                    <input type="text" name="user_name" value="{{ user_name|e }}" />
+                </td>
+            </tr>
+            <tr>
+                <th>パスワード</th>
+                <td>
+                    <input type="password" name="password" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <input type="submit" value="ログイン" />
+    </p>
+</form>
+{% endblock %}

@@ -11,11 +11,15 @@ use Core\Routing\Router;
 use Core\View\View;
 use Core\Exceptions\HttpNotFoundException;
 use Core\Exceptions\UnauthorizedActionException;
-use Core\Exceptions\UnexpectedException;
+use Core\Exceptions\BravelExceptionHandler;
+
+use \Throwable;
 
 abstract class BravelApplication {
 
     protected $debug = false;
+    protected $controller_dir_namespace = 'App\\Controllers\\';
+    protected $config_path = '/config';
 
     public function __construct($debug = false) {
         $this->setDebugMode($debug);
@@ -46,9 +50,8 @@ abstract class BravelApplication {
      * use the 'configure' method instead
      */
     protected function initialize() {
-        Environment::setConfigPath($this->getConfigDir());
+        Environment::initialize($this->getRootDir(), $this->getConfigPath());
         Di::initialize();
-        Di::set(View::class, new View($this->getViewDir()));
     }
 
     abstract public function getRootDir(): string;
@@ -61,62 +64,35 @@ abstract class BravelApplication {
         return $this->debug;
     }
 
+    public function getLoginUrl(): string {
+        return $this->login_url;
+    }
+
     public function getControllerDirNamespace(): string {
-        return 'App\\Controllers\\';
+        return $this->controller_dir_namespace;
     }
 
-    public function getModelDirNamespace(): string {
-        return 'App\\Models\\';
-    }
-
-    public function getEntityDirNamespace(): string {
-        return 'App\\Models\\Entity\\';
-    }
-
-    public function getRepositoryDirNamespace(): string {
-        return 'App\\Repositories\\';
-    }
-
-    public function getDaoDirNamespace(): string {
-        return 'App\\Repositories\\Dao\\';
-    }
-
-    public function getViewDir(): string {
-        return $this->getRootDir() . '/presentation/views';
-    }
-
-    public function getConfigDir(): string {
-        return $this->getRootDir() . '/config';
-    }
-
-    public function getWebDir(): string {
-        return $this->getRootDir() . '/web';
+    public function getConfigPath(): string {
+        return $this->config_path;
     }
 
     public function run() {
         try {
-            $request = Di::get(Request::class);
-            $params = Di::get(Router::class, $this->registerRoutes())->resolve($request->getPathInfo());
-            if ($params === false) {
-                throw new HttpNotFoundException('No route found for ' . $request->getPathInfo());
-            }
+            $action = Di::get(Router::class)->compileRoutes($this->registerRoutes())->resolve();
 
-            $controller = $params['controller'];
-            $action = $params['action'];
-
-            $this->runAction($controller, $action, $params);
+            $this->runAction($action->getController(), $action->getMethod(), $action->getParams());
         } catch (HttpNotFoundException $e) {
-            $e->render($this->isDebugMode());
+            $e->handle($this->isDebugMode());
         } catch (UnauthorizedActionException $e) {
-            $e->setLoginUrl($this->login_url)->render($this->isDebugMode());
-        } catch (\Throwable $e) {
-            Di::get(UnexpectedException::class)->setException($e)->render();
+            $e->setLoginUrl($this->getLoginUrl())->handle($this->isDebugMode());
+        } catch (Throwable $e) {
+            Di::get(BravelExceptionHandler::class, $e)->handle($this->isDebugMode());
         }
 
         Di::get(Response::class)->send();
     }
 
-    public function runAction($controller_name, $action, $params = array()) {
+    public function runAction($controller_name, $method, $params = array()) {
         $controller_class = $this->getControllerDirNamespace() . $controller_name;
 
         $controller = new $controller_class();
@@ -124,7 +100,7 @@ abstract class BravelApplication {
             throw new HttpNotFoundException($controller_class . ' controller is not found.');
         }
 
-        $content = $controller->run($action, $params);
+        $content = $controller->run($method, $params);
 
         Di::set(Response::class, Di::get(Response::class)->setContent($content));
     }

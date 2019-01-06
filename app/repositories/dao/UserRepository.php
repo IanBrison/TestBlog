@@ -3,10 +3,10 @@
 namespace App\Repositories\Dao;
 
 use \DateTime;
-use Core\Datasource\Dao;
+use Core\Datasource\DbDao;
 use App\Repositories\UserRepository as BaseUserRepository;
 
-class UserRepository extends Dao implements BaseUserRepository{
+class UserRepository extends DbDao implements BaseUserRepository{
 
     public function insert($user_name, $password) {
         $password = $this->hashPassword($password);

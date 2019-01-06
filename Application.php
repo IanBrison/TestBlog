@@ -1,6 +1,7 @@
 <?php
 
 use Core\BravelApplication;
+use Core\Routing\Router;
 
 class Application extends BravelApplication {
 
@@ -12,10 +13,17 @@ class Application extends BravelApplication {
 
     protected function registerRoutes() :array {
         return array(
-            '/account' => array('controller' => 'AccountController', 'action' => 'index'),
-            '/account/:action' => array('controller' => 'AccountController')
+            Router::get('/account', 'AccountController', 'index'),
+            Router::get('/account/signin', 'AccountController', 'signin'),
+            Router::post('/account/signin', 'AccountController', 'signin'),
+            Router::get('/account/signup', 'AccountController', 'signup'),
+            Router::post('/account/register', 'AccountController', 'register'),
         );
     }
 
+    /*
+     * configure method runs right after the Application class is initialized
+     * write whatever you want the Application to build or run before the whole process starts
+     */
     protected function configure() {}
 }
