@@ -6,7 +6,7 @@ use \DateTime;
 use Core\Datasource\DbDao;
 use App\Repositories\UserRepository as BaseUserRepository;
 
-class UserRepository extends DbDao implements BaseUserRepository{
+class UserDbDao extends DbDao implements BaseUserRepository{
 
     public function insert($user_name, $password) {
         $password = $this->hashPassword($password);
