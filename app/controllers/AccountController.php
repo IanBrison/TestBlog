@@ -16,15 +16,16 @@ class AccountController extends Controller {
         return 'hello';
     }
 
-    public function signin() {
+    public function getSignin() {
+        $values = array(
+            'user_name' => '',
+            '_token'    => $this->generateCsrfToken('account/signin')
+        );
+        return $this->render('account/signin.twig', $values);
+    }
+
+    public function attemptSignin() {
         $request = Di::get(Request::class);
-        if (!$request->isPost()) {
-            $values = array(
-                'user_name' => '',
-                '_token'    => $this->generateCsrfToken('account/signin')
-            );
-            return $this->render('account/signin.twig', $values);
-        }
 
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
