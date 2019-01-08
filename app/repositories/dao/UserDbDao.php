@@ -4,9 +4,9 @@ namespace App\Repositories\Dao;
 
 use \DateTime;
 use Core\Datasource\DbDao;
-use App\Repositories\UserRepository as BaseUserRepository;
+use App\Repositories\UserRepository;
 
-class UserDbDao extends DbDao implements BaseUserRepository{
+class UserDbDao extends DbDao implements UserRepository {
 
     public function insert($user_name, $password) {
         $password = $this->hashPassword($password);
@@ -27,7 +27,7 @@ class UserDbDao extends DbDao implements BaseUserRepository{
         return $this->fetch($sql, array(':user_name' => $user_name));
     }
 
-    public function isUniqueUserName($user_name) {
+    public function isUniqueUserName($user_name): bool {
         $sql = "SELECT COUNT(id) as count FROM user WHERE user_name = :user_name";
 
         $row = $this->fetch($sql, array(':user_name' => $user_name));
