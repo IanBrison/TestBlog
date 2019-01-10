@@ -15,5 +15,6 @@ return [
 
     'aliases' => [
         App\Repositories\UserRepository::class => App\Repositories\Dao\UserDbDao::class,
+        App\Repositories\StatusRepository::class => App\Repositories\Dao\StatusDbDao::class,
     ]
 ];
