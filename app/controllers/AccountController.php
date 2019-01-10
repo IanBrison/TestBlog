@@ -21,7 +21,7 @@ class AccountController extends Controller {
             'user_name' => '',
             '_token'    => $this->generateCsrfToken('account/signin')
         );
-        return $this->render('account/signin.twig', $values);
+        return $this->render('account/signin', $values);
     }
 
     public function attemptSignin() {
@@ -47,7 +47,7 @@ class AccountController extends Controller {
             'password'  => '',
             '_token'    => $this->generateCsrfToken('account/signup')
         );
-        return $this->render('account/signup.twig', $values);
+        return $this->render('account/signup', $values);
     }
 
     public function register() {
@@ -97,6 +97,6 @@ class AccountController extends Controller {
             'errors'    => $errors,
             '_token'    => $this->generateCsrfToken('account/signup')
         );
-        return $this->render('account/signup.twig', $error_values);
+        return $this->render('account/signup', $error_values);
     }
 }
