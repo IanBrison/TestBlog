@@ -8,13 +8,7 @@
 <form action="{{ base_url }}/account/register" method="POST">
     <input type="hidden" name="_token" value="{{ _token|e }}" />
 
-    {% if errors is defined and errors|length > 0 %}
-        <ul class="error_list">
-            {% for error in errors %}
-                <li>{{ error|e }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    {% include "components/error_list.twig" %}
 
     <table>
         <tbody>
