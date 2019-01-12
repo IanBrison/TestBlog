@@ -5,7 +5,7 @@
 {% block content %}
 <h2>アカウント登録</h2>
 
-<form action="{{ base_url }}/account/register" method="POST">
+<form action="/account/register" method="POST">
     <input type="hidden" name="_token" value="{{ _token|e }}" />
 
     {% include "components/error_list.twig" %}
