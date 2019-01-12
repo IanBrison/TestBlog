@@ -21,6 +21,7 @@ class StatusDbDao extends DbDao implements StatusRepository {
             ':body' => $body,
             ':created_at' => $now->format('Y-m-d H:i:s'),
         ));
+        return true;
     }
 
     public function fetchAllPersonalArchivesByUserId($user_id): array {

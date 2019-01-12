@@ -13,7 +13,8 @@ class Application extends BravelApplication {
 
     protected function registerRoutes() :array {
         return array(
-            Router::get('/account', 'AccountController', 'index'),
+            Router::get('/', 'StatusController', 'index')->withAuth(),
+            Router::post('/status/post', 'StatusController', 'post'),
             Router::get('/account/signin', 'AccountController', 'getSignin'),
             Router::post('/account/signin', 'AccountController', 'attemptSignin'),
             Router::get('/account/signup', 'AccountController', 'signup'),

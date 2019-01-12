@@ -1,0 +1,33 @@
+{% extends "layout.twig" %}
+
+{% block title %}ホーム{% endblock %}
+
+{% block content %}
+<h2>ホーム</h2>
+
+{% include "components/error_list.twig" %}
+
+<form action="{{ base_url }}/status/post" method="post">
+    <input type="hidden" name="_token" value="{{ _token }}" />
+
+    <textarea name="body" rows="2" cols="60">{{ body|e }}</textarea>
+
+    <p>
+        <input type="submit" value="発言" />
+    </p>
+</form>
+
+<div id="statuses">
+    {% for status in statuses %}
+    <div class="status">
+        <div class="status_content">
+            {{ status.user_name|e }}
+            {{ status.body|e }}
+        </div>
+        <div>
+            {{ status.created_at|e }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

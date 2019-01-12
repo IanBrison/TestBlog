@@ -10,12 +10,6 @@ use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
 
-    protected $auth_actions = array('index');
-
-    public function index() {
-        return 'hello';
-    }
-
     public function getSignin() {
         $values = array(
             'user_name' => '',
@@ -38,7 +32,7 @@ class AccountController extends Controller {
         $session = Di::get(Session::class);
         $session->set('user', $user);
         $session->setAuthenticated(true);
-        return $this->redirect('/account');
+        return $this->redirect('/');
     }
 
     public function signup() {
