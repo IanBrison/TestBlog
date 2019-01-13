@@ -3,8 +3,13 @@
 namespace App\Repositories\Dao;
 
 use \DateTime;
+use Core\Di\DiContainer as Di;
 use Core\Datasource\DbDao;
+use Core\Session\Session;
 use App\Repositories\StatusRepository;
+use App\Models\Status;
+use App\Models\Entity\PublicStatus;
+use App\Models\Entity\MyStatus;
 
 class StatusDbDao extends DbDao implements StatusRepository {
 
@@ -26,37 +31,62 @@ class StatusDbDao extends DbDao implements StatusRepository {
 
     public function fetchAllPersonalArchivesByUserId($user_id): array {
         $sql = "
-            SELECT status.*, user.user_name
+            SELECT *
                 FROM status
-                    LEFT JOIN user ON status.user_id = user.id
-                WHERE user.id = :user_id
-                ORDER BY status.created_at DESC
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC
         ";
 
-        return $this->fetchAll($sql, array(':user_id' => $user_id));
+        $rows = $this->fetchAll($sql, array(':user_id' => $user_id));
+
+        $login_user = Di::get(Session::class)->get('user');
+        $statuses = array();
+        foreach ($rows as $row) {
+            if ($row['user_id'] == $login_user['id']) {
+                $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+            } else {
+                $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+            }
+        }
+        return $statuses;
     }
 
     public function fetchAllByUserId($user_id): array {
         $sql = "
-            SELECT status.*, user.user_name
+            SELECT *
                 FROM status
-                    LEFT JOIN user ON status.user_id = user.id
-                WHERE user.id = :user_id
-                ORDER BY status.created_at DESC
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC
         ";
 
-        return $this->fetchAll($sql, array(':user_id' => $user_id));
+        $rows = $this->fetchAll($sql, array(':user_id' => $user_id));
+
+        $login_user = Di::get(Session::class)->get('user');
+        $statuses = array();
+        foreach ($rows as $row) {
+            if ($row['user_id'] == $login_user['id']) {
+                $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+            } else {
+                $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+            }
+        }
+        return $statuses;
     }
 
-    public function fetchById($id) {
+    public function fetchById($id): Status {
         $sql = "
-            SELECT status.*, user.user_name
+            SELECT *
                 FROM status
-                    LEFT JOIN user ON status.user_id = user.id
-                WHERE status.id = :id
-                ORDER BY status.created_at DESC
+                WHERE id = :id
+                ORDER BY created_at DESC
         ";
 
-        return $this->fetch($sql, array(':id' => $id));
+        $row = $this->fetch($sql, array(':id' => $id));
+
+        $login_user = Di::get(Session::class)->get('user');
+        if ($row['user_id'] == $login_user['id']) {
+            return new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+        }
+        return new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
     }
 }

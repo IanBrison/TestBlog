@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\Status;
+
 interface StatusRepository {
 
     public function insert($user_id, $body): bool;
@@ -10,5 +12,5 @@ interface StatusRepository {
 
     public function fetchAllByUserId($user_id): array;
 
-    public function fetchById($id);
+    public function fetchById($id): Status;
 }

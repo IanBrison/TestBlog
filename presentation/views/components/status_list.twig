@@ -3,14 +3,14 @@
     {% for status in statuses %}
     <div class="status">
         <div class="status_content">
-            <a href="/user/{{ status.user_name|e }}">
-                {{ status.user_name|e }}
+            <a href="/user/{{ status.user.name|e }}">
+                {{ status.user.name|e }}
             </a>
             {{ status.body|e }}
         </div>
         <div>
             <a href="/status/{{ status.id }}">
-                {{ status.created_at|e }}
+                {{ status.createdAt|e }}
             </a>
         </div>
     </div>
