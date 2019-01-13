@@ -17,17 +17,6 @@
     </p>
 </form>
 
-<div id="statuses">
-    {% for status in statuses %}
-    <div class="status">
-        <div class="status_content">
-            {{ status.user_name|e }}
-            {{ status.body|e }}
-        </div>
-        <div>
-            {{ status.created_at|e }}
-        </div>
-    </div>
-    {% endfor %}
-</div>
+{% include "components/status_list.twig" %}
+
 {% endblock %}

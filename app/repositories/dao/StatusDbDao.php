@@ -35,4 +35,28 @@ class StatusDbDao extends DbDao implements StatusRepository {
 
         return $this->fetchAll($sql, array(':user_id' => $user_id));
     }
+
+    public function fetchAllByUserId($user_id): array {
+        $sql = "
+            SELECT status.*, user.user_name
+                FROM status
+                    LEFT JOIN user ON status.user_id = user.id
+                WHERE user.id = :user_id
+                ORDER BY status.created_at DESC
+        ";
+
+        return $this->fetchAll($sql, array(':user_id' => $user_id));
+    }
+
+    public function fetchById($id) {
+        $sql = "
+            SELECT status.*, user.user_name
+                FROM status
+                    LEFT JOIN user ON status.user_id = user.id
+                WHERE status.id = :id
+                ORDER BY status.created_at DESC
+        ";
+
+        return $this->fetch($sql, array(':id' => $id));
+    }
 }

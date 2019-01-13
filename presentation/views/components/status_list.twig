@@ -1,0 +1,21 @@
+<div id="statuses">
+    {% if statuses|length > 0 %}
+    {% for status in statuses %}
+    <div class="status">
+        <div class="status_content">
+            <a href="/user/{{ status.user_name|e }}">
+                {{ status.user_name|e }}
+            </a>
+            {{ status.body|e }}
+        </div>
+        <div>
+            <a href="/status/{{ status.id }}">
+                {{ status.created_at|e }}
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+        <p>No statuses LOL</p>
+    {% endif %}
+</div>

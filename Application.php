@@ -15,6 +15,8 @@ class Application extends BravelApplication {
         return array(
             Router::get('/', 'StatusController', 'index')->withAuth(),
             Router::post('/status/post', 'StatusController', 'post'),
+            Router::get('/user/:user_name', 'StatusController', 'user'),
+            Router::get('/status/:id', 'StatusController', 'show'),
             Router::get('/account/signin', 'AccountController', 'getSignin'),
             Router::post('/account/signin', 'AccountController', 'attemptSignin'),
             Router::get('/account/signup', 'AccountController', 'signup'),

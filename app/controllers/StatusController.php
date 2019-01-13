@@ -6,7 +6,9 @@ use Core\Di\DiContainer as Di;
 use Core\Session\Session;
 use Core\Request\Request;
 use Core\Controller\Controller;
+use Core\Exceptions\HttpNotFoundException;
 use App\Repositories\StatusRepository;
+use App\Repositories\UserRepository;
 
 class StatusController extends Controller {
 
@@ -54,5 +56,34 @@ class StatusController extends Controller {
             '_token' => $this->generateCsrfToken('status/post')
         );
         return $this->render('status/index', $values);
+    }
+
+    public function user($params) {
+        $user_name = $params['user_name'];
+        $user = Di::get(UserRepository::class)->fetchByUserName($user_name);
+        if (!$user) {
+            throw new HttpNotFoundException("No user found with username `$user_name`");
+        }
+
+        $statuses = Di::get(StatusRepository::class)->fetchAllByUserId($user['id']);
+
+        $values = array(
+            'user' => $user,
+            'statuses' => $statuses,
+        );
+        return $this->render('status/user', $values);
+    }
+
+    public function show($params) {
+        $status_id = $params['id'];
+        $status = Di::get(StatusRepository::class)->fetchById($status_id);
+        if (!$status) {
+            throw new HttpNotFoundException("No status found with status_id `$status_id`");
+        }
+
+        $values = array(
+            'status' => $status,
+        );
+        return $this->render('status/show', $values);
     }
 }

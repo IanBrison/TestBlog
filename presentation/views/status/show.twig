@@ -1,0 +1,10 @@
+{% extends "layout.twig" %}
+
+{% block title %}{{ use.name }}{% endblock %}
+
+{% block content %}
+<h2>ホーム</h2>
+
+{% include "components/status_list.twig" with {statuses:[status]} %}
+
+{% endblock %}
