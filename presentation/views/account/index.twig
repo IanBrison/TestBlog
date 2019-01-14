@@ -16,4 +16,17 @@
         <a href="/account/signout">ログアウト</a>
     </li>
 </ul>
+
+<h3>フォロー中</h3>
+{% if followings|length > 0 %}
+<ul>
+    {% for following_user in followings %}
+    <li>
+        <a href="/user/{{ following_user.name|e }}">
+            {{ following_user.name|e }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}

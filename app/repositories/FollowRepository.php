@@ -12,5 +12,5 @@ interface FollowRepository {
 
     public function getFollowers(User $user): array;
 
-    public function isFollowing(User $user, User $user_might_followed): bool;
+    public function isFollowing(User $user, User $user_might_be_following): bool;
 }

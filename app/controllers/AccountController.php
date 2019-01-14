@@ -13,8 +13,12 @@ class AccountController extends Controller {
 
     public function index() {
         $user = Di::get(AuthRepository::class)->user();
+        $followings = $user->followings();
 
-        $values = array('user' => $user);
+        $values = array(
+            'user' => $user,
+            'followings' => $followings
+        );
         return $this->render('account/index', $values);
     }
 

@@ -61,7 +61,7 @@ class UserDbDao extends DbDao implements UserRepository {
     public function attemptSignin($user_name, $password): User {
         $password = $this->hashPassword($password);
 
-        $sql = "SELECT * from user WHERE user_name = :user_name AND password = :password";
+        $sql = "SELECT * FROM user WHERE user_name = :user_name AND password = :password";
         $row = $this->fetch($sql, array(':user_name' => $user_name, ':password' => $password));
         if (empty($row['user_name'])) {
             return new GuestUser();
