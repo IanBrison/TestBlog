@@ -1,9 +1,19 @@
 {% extends "layout.twig" %}
 
-{% block title %}{{ use.name }}{% endblock %}
+{% block title %}{{ user.name }}{% endblock %}
 
 {% block content %}
 <h2>ホーム</h2>
+
+{% if is_following is defined and is_following is same as (true) %}
+<p>フォロー中</p>
+{% elseif is_following is defined and is_following is same as (false) %}
+<form action="/account/follow" method="POST">
+    {% include "components/csrf_token.twig" %}
+    <input type="hidden" name="following_user_id" value="{{ user.id }}" />
+    <input type="submit" value="フォローする" />
+</form>
+{% endif %}
 
 {% include "components/status_list.twig" %}
 

@@ -7,6 +7,7 @@ use Core\Request\Request;
 use Core\Controller\Controller;
 use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\FollowRepository;
 
 class AccountController extends Controller {
 
@@ -107,5 +108,24 @@ class AccountController extends Controller {
         Di::get(AuthRepository::class)->signout();
 
         return $this->redirect('/account/signin');
+    }
+
+    public function follow() {
+        $request = Di::get(Request::class);
+
+        $token = $request->getPost('_token');
+        if (!$this->checkCsrfToken('account/follow', $token)) {
+            return $this->redirect('/account/follow');
+        }
+
+        $user_to_be_followed = Di::get(UserRepository::class)->fetchById($request->getPost('following_user_id'));
+        if ($user_to_be_followed->isGuest()) {
+            return $this->redirect('/account');
+        }
+        if (!$user_to_be_followed->isSelf()) {
+            $result = Di::get(FollowRepository::class)->follow(Di::get(AuthRepository::class)->user(), $user_to_be_followed);
+        }
+
+        return $this->redirect('/user/'.$user_to_be_followed->name());
     }
 }

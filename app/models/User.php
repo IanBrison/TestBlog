@@ -13,4 +13,8 @@ interface User {
     public function isGuest(): bool;
 
     public function statuses(): array;
+
+    public function followings(): array;
+
+    public function followers(): array;
 }

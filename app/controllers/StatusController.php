@@ -9,6 +9,7 @@ use Core\Exceptions\HttpNotFoundException;
 use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\FollowRepository;
 
 class StatusController extends Controller {
 
@@ -67,9 +68,17 @@ class StatusController extends Controller {
 
         $statuses = Di::get(StatusRepository::class)->fetchAllByUserId($user->id());
 
+        $is_following = null;
+        $login_user = Di::get(AuthRepository::class)->user();
+        if ($login_user->isSelf() && !$user->isSelf()) {
+            $is_following = Di::get(FollowRepository::class)->isFollowing($login_user, $user);
+        }
+
         $values = array(
             'user' => $user,
             'statuses' => $statuses,
+            'is_following' => $is_following,
+            '_token' => $this->generateCsrfToken('account/follow')
         );
         return $this->render('status/user', $values);
     }
