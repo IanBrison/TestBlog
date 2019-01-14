@@ -36,11 +36,7 @@ class UserDbDao extends DbDao implements UserRepository {
 
         $row = $this->fetch($sql, array(':user_name' => $user_name));
 
-        $user = Di::get(AuthRepository::class)->user();
-        if ($user->isSelf() && $user->id() === (int)$row['id']) {
-            return new SelfUser($row['id'], $row['user_name']);
-        }
-        return new OtherUser($row['id'], $row['user_name']);
+        return $this->constructUserFromRow($row);
     }
 
     public function fetchById($id): User {
@@ -48,11 +44,7 @@ class UserDbDao extends DbDao implements UserRepository {
 
         $row = $this->fetch($sql, array(':id' => $id));
 
-        $user = Di::get(AuthRepository::class)->user();
-        if ($user->isSelf() && $user->id() === (int)$row['id']) {
-            return new SelfUser($row['id'], $row['user_name']);
-        }
-        return new OtherUser($row['id'], $row['user_name']);
+        return $this->constructUserFromRow($row);
     }
 
     public function isUniqueUserName($user_name): bool {
@@ -80,5 +72,16 @@ class UserDbDao extends DbDao implements UserRepository {
 
     protected function hashPassword($password) {
         return sha1($password . 'SecretKey');
+    }
+
+    private function constructUserFromRow($row) {
+        if ($row === false) {
+            return new GuestUser();
+        }
+        $user = Di::get(AuthRepository::class)->user();
+        if ($user->isSelf() && $user->id() === (int)$row['id']) {
+            return new SelfUser($row['id'], $row['user_name']);
+        }
+        return new OtherUser($row['id'], $row['user_name']);
     }
 }
