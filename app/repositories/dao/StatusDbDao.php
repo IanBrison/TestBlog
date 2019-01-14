@@ -34,9 +34,11 @@ class StatusDbDao extends DbDao implements StatusRepository {
 
     public function fetchAllPersonalArchivesByUserId($user_id): array {
         $sql = "
-            SELECT *
+            SELECT status.*
                 FROM status
-                WHERE user_id = :user_id
+                LEFT JOIN following ON following.following_id = status.user_id AND following.user_id = :user_id
+                WHERE status.user_id = :user_id
+                OR following.user_id = :user_id
                 ORDER BY created_at DESC
         ";
 
