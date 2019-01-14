@@ -8,7 +8,7 @@
 {% include "components/error_list.twig" %}
 
 <form action="/status/post" method="post">
-    <input type="hidden" name="_token" value="{{ _token }}" />
+    {% include "components/csrf_token.twig" %}
 
     <textarea name="body" rows="2" cols="60">{{ body|e }}</textarea>
 

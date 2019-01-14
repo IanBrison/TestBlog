@@ -5,27 +5,16 @@
 {% block content %}
 <h2>アカウント登録</h2>
 
+<p>
+    <a href="/account/signin">ログイン</a>
+</p>
+
 <form action="/account/register" method="POST">
-    <input type="hidden" name="_token" value="{{ _token|e }}" />
+    {% include "components/csrf_token.twig" %}
 
     {% include "components/error_list.twig" %}
 
-    <table>
-        <tbody>
-            <tr>
-                <th>ユーザID</th>
-                <td>
-                    <input type="text" name="user_name" value="{{ user_name|e }}" />
-                </td>
-            </tr>
-            <tr>
-                <th>パスワード</th>
-                <td>
-                    <input type="password" name="password" value="{{ password|e }}" />
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    {% include "account/components/user_input.twig" %}
 
     <p>
         <input type="submit" value="登録" />
