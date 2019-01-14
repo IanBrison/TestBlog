@@ -24,6 +24,7 @@ class Application extends BravelApplication {
             Router::post('/account/signin', 'AccountController', 'attemptSignin'),
             Router::get('/account/signup', 'AccountController', 'signup'),
             Router::post('/account/register', 'AccountController', 'register'),
+            Router::get('/account/signout', 'AccountController', 'signout'),
         );
     }
 

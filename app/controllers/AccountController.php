@@ -102,4 +102,10 @@ class AccountController extends Controller {
         );
         return $this->render('account/signup', $error_values);
     }
+
+    public function signout() {
+        Di::get(AuthRepository::class)->signout();
+
+        return $this->redirect('/account/signin');
+    }
 }

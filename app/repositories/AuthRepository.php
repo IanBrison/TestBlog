@@ -13,4 +13,6 @@ interface AuthRepository {
     public function attemptSignin(string $user_name, string $password): bool;
 
     public function setUser(User $user);
+
+    public function signout();
 }

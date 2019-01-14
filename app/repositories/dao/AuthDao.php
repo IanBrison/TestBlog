@@ -44,4 +44,10 @@ class AuthDao implements AuthRepository {
         Di::get(Session::class)->set('user', $user)->setAuthenticated(true);
         $this->user = $user;
     }
+
+    public function signout() {
+        Di::get(Session::class)->clear()->setAuthenticated(false);
+        $this->user = new GuestUser();
+        $this->is_authenticated = false;
+    }
 }
