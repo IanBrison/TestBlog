@@ -10,6 +10,13 @@ use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
 
+    public function index() {
+        $user = Di::get(AuthRepository::class)->user();
+
+        $values = array('user' => $user);
+        return $this->render('account/index', $values);
+    }
+
     public function getSignin() {
         $values = array(
             'user_name' => '',
@@ -21,15 +28,26 @@ class AccountController extends Controller {
     public function attemptSignin() {
         $request = Di::get(Request::class);
 
+        $token = $request->getPost('_token');
+        if (!$this->checkCsrfToken('account/signin', $token)) {
+            return $this->redirect('/account/signin');
+        }
+
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
 
         $result = Di::get(AuthRepository::class)->attemptSignin($user_name, $password);
-        if ($result === false) {
-            return $this->redirect('/account/signin');
+        if ($result) {
+            return $this->redirect('/');
         }
 
-        return $this->redirect('/');
+        $errors = array('ユーザIDかパスワードが不正です');
+        $values = array(
+            'errors' => $errors,
+            'user_name' => $user_name,
+            '_token' => $this->generateCsrfToken('account/signin')
+        );
+        return $this->render('/account/signin', $values);
     }
 
     public function signup() {
@@ -43,9 +61,6 @@ class AccountController extends Controller {
 
     public function register() {
         $request = Di::get(Request::class);
-        if (!$request->isPost()) {
-            $this->forward404();
-        }
 
         $token = $request->getPost('_token');
         if (!$this->checkCsrfToken('account/signup', $token)) {
