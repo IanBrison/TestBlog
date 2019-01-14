@@ -9,11 +9,13 @@ return [
         Core\Request\Request::class,
         Core\Response\Response::class,
         Core\Session\Session::class,
-        Core\Database\DbManager::class,
+        Core\Datasource\DbManager::class,
         Core\Routing\Router::class,
     ],
 
     'aliases' => [
+        App\Repositories\AuthRepository::class => App\Repositories\Dao\AuthDao::class,
+
         App\Repositories\UserRepository::class => App\Repositories\Dao\UserDbDao::class,
         App\Repositories\StatusRepository::class => App\Repositories\Dao\StatusDbDao::class,
     ]

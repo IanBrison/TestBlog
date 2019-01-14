@@ -2,10 +2,10 @@
 
 namespace App\Repositories\Dao;
 
-use \DateTime;
+use DateTime;
 use Core\Di\DiContainer as Di;
 use Core\Datasource\DbDao;
-use Core\Session\Session;
+use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Models\Status;
 use App\Models\Entity\PublicStatus;
@@ -13,20 +13,23 @@ use App\Models\Entity\MyStatus;
 
 class StatusDbDao extends DbDao implements StatusRepository {
 
-    public function insert($user_id, $body): bool {
+    public function insert($user_id, $body): Status {
         $now = new DateTime();
+        $created_at = $now->format('Y-m-d H:i:s');
 
         $sql = "
             INSERT INTO status(user_id, body, created_at)
                 VALUES(:user_id, :body, :created_at)
         ";
 
-        $stmt = $this->execute($sql, array(
+        $this->execute($sql, array(
             ':user_id' => $user_id,
             ':body' => $body,
-            ':created_at' => $now->format('Y-m-d H:i:s'),
+            ':created_at' => $created_at,
         ));
-        return true;
+
+        $id = $this->getLastInsertId();
+        return new MyStatus($id, $body, $user_id, $created_at);
     }
 
     public function fetchAllPersonalArchivesByUserId($user_id): array {
@@ -39,10 +42,10 @@ class StatusDbDao extends DbDao implements StatusRepository {
 
         $rows = $this->fetchAll($sql, array(':user_id' => $user_id));
 
-        $login_user = Di::get(Session::class)->get('user');
+        $user = Di::get(AuthRepository::class)->user();
         $statuses = array();
         foreach ($rows as $row) {
-            if ($row['user_id'] == $login_user['id']) {
+            if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
                 $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
             } else {
                 $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
@@ -61,10 +64,10 @@ class StatusDbDao extends DbDao implements StatusRepository {
 
         $rows = $this->fetchAll($sql, array(':user_id' => $user_id));
 
-        $login_user = Di::get(Session::class)->get('user');
+        $user = Di::get(AuthRepository::class)->user();
         $statuses = array();
         foreach ($rows as $row) {
-            if ($row['user_id'] == $login_user['id']) {
+            if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
                 $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
             } else {
                 $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
@@ -83,8 +86,8 @@ class StatusDbDao extends DbDao implements StatusRepository {
 
         $row = $this->fetch($sql, array(':id' => $id));
 
-        $login_user = Di::get(Session::class)->get('user');
-        if ($row['user_id'] == $login_user['id']) {
+        $user = Di::get(AuthRepository::class)->user();
+        if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
             return new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
         }
         return new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);

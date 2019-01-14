@@ -3,9 +3,9 @@
 namespace App\Controllers;
 
 use Core\Di\DiContainer as Di;
-use Core\Session\Session;
 use Core\Request\Request;
 use Core\Controller\Controller;
+use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
 
 class AccountController extends Controller {
@@ -24,14 +24,11 @@ class AccountController extends Controller {
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
 
-        $user = Di::get(UserRepository::class)->attemptSignin($user_name, $password);
-        if ($user === false) {
+        $result = Di::get(AuthRepository::class)->attemptSignin($user_name, $password);
+        if ($result === false) {
             return $this->redirect('/account/signin');
         }
 
-        $session = Di::get(Session::class);
-        $session->set('user', $user);
-        $session->setAuthenticated(true);
         return $this->redirect('/');
     }
 
@@ -75,12 +72,9 @@ class AccountController extends Controller {
         }
 
         if (count($errors) === 0) {
-            $session = Di::get(Session::class);
-            Di::get(UserRepository::class)->insert($user_name, $password);
-            $session->setAuthenticated(true);
+            $user = Di::get(UserRepository::class)->insert($user_name, $password);
 
-            $user = Di::get(UserRepository::class)->fetchByUserName($user_name);
-            $session->set('user', $user);
+            Di::get(AuthRepository::class)->setUser($user);
 
             return $this->redirect('/');
         }

@@ -6,7 +6,7 @@ use App\Models\User;
 
 interface UserRepository {
 
-    public function insert($user_name, $password);
+    public function insert($user_name, $password): User;
 
     public function fetchByUserName($user_name);
 
@@ -14,5 +14,5 @@ interface UserRepository {
 
     public function isUniqueUserName($user_name): bool;
 
-    public function attemptSignin($user_name, $password);
+    public function attemptSignin($user_name, $password): User;
 }

@@ -3,18 +3,18 @@
 namespace App\Controllers;
 
 use Core\Di\DiContainer as Di;
-use Core\Session\Session;
 use Core\Request\Request;
 use Core\Controller\Controller;
 use Core\Exceptions\HttpNotFoundException;
+use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Repositories\UserRepository;
 
 class StatusController extends Controller {
 
     public function index() {
-        $user = Di::get(Session::class)->get('user');
-        $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user['id']);
+        $user = Di::get(AuthRepository::class)->user();
+        $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
 
         $values = array(
             'statuses' => $statuses,
@@ -41,13 +41,13 @@ class StatusController extends Controller {
             $errors[] = 'ひとことは200文字以内で入力してください';
         }
 
-        $user = Di::get(Session::class)->get('user');
+        $user = Di::get(AuthRepository::class)->user();
         if (count($errors) === 0) {
-            Di::get(StatusRepository::class)->insert($user['id'], $body);
+            $status = Di::get(StatusRepository::class)->insert($user->id(), $body);
             return $this->redirect('/');
         }
 
-        $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user['id']);
+        $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
 
         $values = array(
             'errors' => $errors,
@@ -61,11 +61,11 @@ class StatusController extends Controller {
     public function user($params) {
         $user_name = $params['user_name'];
         $user = Di::get(UserRepository::class)->fetchByUserName($user_name);
-        if (!$user) {
+        if ($user->isGuest()) {
             throw new HttpNotFoundException("No user found with username `$user_name`");
         }
 
-        $statuses = Di::get(StatusRepository::class)->fetchAllByUserId($user['id']);
+        $statuses = Di::get(StatusRepository::class)->fetchAllByUserId($user->id());
 
         $values = array(
             'user' => $user,
