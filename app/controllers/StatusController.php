@@ -10,6 +10,8 @@ use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\FollowRepository;
+use Presentation\Models\Components\CsrfToken;
+use Presentation\Models\Components\ErrorList;
 
 class StatusController extends Controller {
 
@@ -17,10 +19,11 @@ class StatusController extends Controller {
         $user = Di::get(AuthRepository::class)->user();
         $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
 
+        $csrf_view_model = new CsrfToken($this->generateCsrfToken('status/post'));
         $values = array(
             'statuses' => $statuses,
             'body' => '',
-            '_token' => $this->generateCsrfToken('status/post')
+            'csrf_view_model' => $csrf_view_model
         );
         return $this->render('status/index', $values);
     }
@@ -34,27 +37,27 @@ class StatusController extends Controller {
 
         $body = $request->getPost('body');
 
-        $errors = array();
-
+        $error_list_view_model = new ErrorList();
         if (!strlen($body)) {
-            $errors[] = 'ひとことを入力してください';
+            $error_list_view_model->addError('ひとことを入力してください');
         } else if (mb_strlen($body) > 200) {
-            $errors[] = 'ひとことは200文字以内で入力してください';
+            $error_list_view_model->addError('ひとことは200文字以内で入力してください');
         }
 
         $user = Di::get(AuthRepository::class)->user();
-        if (count($errors) === 0) {
+        if (!$error_list_view_model->hasErrors()) {
             $status = Di::get(StatusRepository::class)->insert($user->id(), $body);
             return $this->redirect('/');
         }
 
         $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
 
+        $csrf_view_model = new CsrfToken($this->generateCsrfToken('status/post'));
         $values = array(
-            'errors' => $errors,
+            'error_list_view_model' => $error_list_view_model,
             'statuses' => $statuses,
             'body' => $body,
-            '_token' => $this->generateCsrfToken('status/post')
+            'csrf_view_model' => $csrf_view_model
         );
         return $this->render('status/index', $values);
     }
@@ -74,11 +77,12 @@ class StatusController extends Controller {
             $is_following = Di::get(FollowRepository::class)->isFollowing($login_user, $user);
         }
 
+        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/follow'));
         $values = array(
             'user' => $user,
             'statuses' => $statuses,
             'is_following' => $is_following,
-            '_token' => $this->generateCsrfToken('account/follow')
+            'csrf_view_model' => $csrf_view_model
         );
         return $this->render('status/user', $values);
     }

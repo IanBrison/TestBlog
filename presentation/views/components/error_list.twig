@@ -1,6 +1,6 @@
-{% if errors is defined and errors|length > 0 %}
+{% if vm.hasErrors %}
     <ul class="error_list">
-        {% for error in errors %}
+        {% for error in vm.errors %}
             <li>{{ error|e }}</li>
         {% endfor %}
     </ul>

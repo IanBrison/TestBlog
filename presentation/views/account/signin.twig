@@ -10,9 +10,9 @@
 </p>
 
 <form action="/account/signin" method="POST">
-    {% include "components/csrf_token.twig" %}
+    {{ csrf_view_model.present | raw }}
 
-    {% include "components/error_list.twig" %}
+    {{ error_list_view_model.present | raw }}
 
     {% include "account/components/user_input.twig" %}
 

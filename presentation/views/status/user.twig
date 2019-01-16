@@ -9,7 +9,7 @@
 <p>フォロー中</p>
 {% elseif is_following is defined and is_following is same as (false) %}
 <form action="/account/follow" method="POST">
-    {% include "components/csrf_token.twig" %}
+    {{ csrf_view_model.present | raw }}
     <input type="hidden" name="following_user_id" value="{{ user.id }}" />
     <input type="submit" value="フォローする" />
 </form>

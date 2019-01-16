@@ -8,6 +8,8 @@ use Core\Controller\Controller;
 use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\FollowRepository;
+use Presentation\Models\Components\CsrfToken;
+use Presentation\Models\Components\ErrorList;
 
 class AccountController extends Controller {
 
@@ -23,9 +25,10 @@ class AccountController extends Controller {
     }
 
     public function getSignin() {
+        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signin'));
         $values = array(
             'user_name' => '',
-            '_token'    => $this->generateCsrfToken('account/signin')
+            'csrf_view_model' => $csrf_view_model
         );
         return $this->render('account/signin', $values);
     }
@@ -46,20 +49,23 @@ class AccountController extends Controller {
             return $this->redirect('/');
         }
 
-        $errors = array('ユーザIDかパスワードが不正です');
+        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signin'));
+        $error_list_view_model = new ErrorList();
+        $error_list_view_model->addError('ユーザIDかパスワードが不正です');
         $values = array(
-            'errors' => $errors,
             'user_name' => $user_name,
-            '_token' => $this->generateCsrfToken('account/signin')
+            'error_list_view_model' => $error_list_view_model,
+            'csrf_view_model' => $csrf_view_model
         );
         return $this->render('/account/signin', $values);
     }
 
     public function signup() {
+        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signup'));
         $values = array(
             'user_name' => '',
             'password'  => '',
-            '_token'    => $this->generateCsrfToken('account/signup')
+            'csrf_view_model' => $csrf_view_model
         );
         return $this->render('account/signup', $values);
     }
@@ -75,23 +81,23 @@ class AccountController extends Controller {
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
 
-        $errors = array();
 
+        $error_list_view_model = new ErrorList();
         if (!strlen($user_name)) {
-            $errors[] = 'ユーザIDを入力してください';
+            $error_list_view_model->addError('ユーザIDを入力してください');
         } else if (!preg_match('/^\w{3,20}$/', $user_name)) {
-            $errors[] = 'ユーザIDは半角英数字およびアンダースコアを3~20文字いないで入力してください';
+            $error_list_view_model->addError('ユーザIDは半角英数字およびアンダースコアを3~20文字いないで入力してください');
         } else if (!Di::get(UserRepository::class)->isUniqueUserName($user_name)) {
-            $errors[] = 'ユーザIDは既に使用されています';
+            $error_list_view_model->addError('ユーザIDは既に使用されています');
         }
 
         if (!strlen($password)) {
-            $errors[] = 'パスワードを入力してください';
+            $error_list_view_model->addError('パスワードを入力してください');
         } else if (4 > strlen($password) || strlen($password) > 30) {
-            $errors[] = 'パスワードは4~30文字以内で入力してください';
+            $error_list_view_model->addError('パスワードは4~30文字以内で入力してください');
         }
 
-        if (count($errors) === 0) {
+        if (!$error_list_view_model->hasErrors()) {
             $user = Di::get(UserRepository::class)->insert($user_name, $password);
 
             Di::get(AuthRepository::class)->setUser($user);
@@ -99,11 +105,12 @@ class AccountController extends Controller {
             return $this->redirect('/');
         }
 
+        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signup'));
         $error_values = array(
             'user_name' => $user_name,
             'password'  => $password,
-            'errors'    => $errors,
-            '_token'    => $this->generateCsrfToken('account/signup')
+            'error_list_view_model' => $error_list_view_model,
+            'csrf_view_model' => $csrf_view_model
         );
         return $this->render('account/signup', $error_values);
     }

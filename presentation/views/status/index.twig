@@ -5,10 +5,10 @@
 {% block content %}
 <h2>ホーム</h2>
 
-{% include "components/error_list.twig" %}
+{{ error_list_view_model.present | raw }}
 
 <form action="/status/post" method="post">
-    {% include "components/csrf_token.twig" %}
+    {{ csrf_view_model.present | raw }}
 
     <textarea name="body" rows="2" cols="60">{{ body|e }}</textarea>
 
