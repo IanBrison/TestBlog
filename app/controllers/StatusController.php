@@ -89,9 +89,6 @@ class StatusController extends Controller {
     public function show($params) {
         $status_id = $params['id'];
         $status = Di::get(StatusRepository::class)->fetchById($status_id);
-        if (!$status) {
-            throw new HttpNotFoundException("No status found with status_id `$status_id`");
-        }
 
         $values = array(
             'status' => $status,

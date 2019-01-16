@@ -5,6 +5,7 @@ namespace App\Repositories\Dao;
 use DateTime;
 use Core\Di\DiContainer as Di;
 use Core\Datasource\DbDao;
+use Core\Exceptions\HttpNotFoundException;
 use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Models\Status;
@@ -87,6 +88,10 @@ class StatusDbDao extends DbDao implements StatusRepository {
         ";
 
         $row = $this->fetch($sql, array(':id' => $id));
+
+        if (!$row) {
+            throw new HttpNotFoundException("No status found with status_id `$id`");
+        }
 
         $user = Di::get(AuthRepository::class)->user();
         if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
