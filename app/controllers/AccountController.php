@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use Core\Di\DiContainer as Di;
 use Core\Request\Request;
+use Core\Session\Session;
 use Core\Controller\Controller;
 use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
@@ -25,9 +26,13 @@ class AccountController extends Controller {
     }
 
     public function getSignin() {
+        $session = Di::get(Session::class);
+        $user_name = $session->get('user_name');
+        $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
         $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signin'));
         $values = array(
-            'user_name' => '',
+            'user_name' => $user_name,
+            'error_list_view_model' => $error_list_view_model,
             'csrf_view_model' => $csrf_view_model
         );
         return $this->render('account/signin', $values);
@@ -49,22 +54,23 @@ class AccountController extends Controller {
             return $this->redirect('/');
         }
 
-        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signin'));
         $error_list_view_model = new ErrorList();
         $error_list_view_model->addError('ユーザIDかパスワードが不正です');
-        $values = array(
-            'user_name' => $user_name,
-            'error_list_view_model' => $error_list_view_model,
-            'csrf_view_model' => $csrf_view_model
-        );
-        return $this->render('/account/signin', $values);
+
+        $session = Di::get(Session::class);
+        $session->oneTimeSet('user_name', $user_name);
+        $session->oneTimeSet('error_list_view_model', $error_list_view_model);
+        return $this->redirect('/account/signin');
     }
 
     public function signup() {
+        $session = Di::get(Session::class);
+        $user_name = $session->get('user_name');
+        $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
         $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signup'));
         $values = array(
-            'user_name' => '',
-            'password'  => '',
+            'user_name' => $user_name,
+            'error_list_view_model' => $error_list_view_model,
             'csrf_view_model' => $csrf_view_model
         );
         return $this->render('account/signup', $values);
@@ -80,7 +86,6 @@ class AccountController extends Controller {
 
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
-
 
         $error_list_view_model = new ErrorList();
         if (!strlen($user_name)) {
@@ -105,14 +110,11 @@ class AccountController extends Controller {
             return $this->redirect('/');
         }
 
-        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signup'));
-        $error_values = array(
-            'user_name' => $user_name,
-            'password'  => $password,
-            'error_list_view_model' => $error_list_view_model,
-            'csrf_view_model' => $csrf_view_model
-        );
-        return $this->render('account/signup', $error_values);
+        $session = Di::get(Session::class);
+        $session->oneTimeSet('user_name', $user_name);
+        $session->oneTimeSet('error_list_view_model', $error_list_view_model);
+
+        return $this->redirect('/account/signup');
     }
 
     public function signout() {

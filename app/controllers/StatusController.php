@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use Core\Di\DiContainer as Di;
 use Core\Request\Request;
+use Core\Session\Session;
 use Core\Controller\Controller;
 use Core\Exceptions\HttpNotFoundException;
 use App\Repositories\AuthRepository;
@@ -16,13 +17,17 @@ use Presentation\Models\Components\ErrorList;
 class StatusController extends Controller {
 
     public function index() {
+        $session = Di::get(Session::class);
         $user = Di::get(AuthRepository::class)->user();
         $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
 
+        $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
+        $body = $session->get('body');
         $csrf_view_model = new CsrfToken($this->generateCsrfToken('status/post'));
         $values = array(
             'statuses' => $statuses,
-            'body' => '',
+            'error_list_view_model' => $error_list_view_model,
+            'body' => $body,
             'csrf_view_model' => $csrf_view_model
         );
         return $this->render('status/index', $values);
@@ -50,16 +55,10 @@ class StatusController extends Controller {
             return $this->redirect('/');
         }
 
-        $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
-
-        $csrf_view_model = new CsrfToken($this->generateCsrfToken('status/post'));
-        $values = array(
-            'error_list_view_model' => $error_list_view_model,
-            'statuses' => $statuses,
-            'body' => $body,
-            'csrf_view_model' => $csrf_view_model
-        );
-        return $this->render('status/index', $values);
+        $session = Di::get(Session::class);
+        $session->oneTimeSet('body', $body);
+        $session->oneTimeSet('error_list_view_model', $error_list_view_model);
+        return $this->redirect('/');
     }
 
     public function user($params) {
