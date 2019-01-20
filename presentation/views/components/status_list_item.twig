@@ -1,0 +1,13 @@
+<div class="status">
+    <div class="status_content">
+        <a href="{{ vm.UserUrl|e }}">
+            {{ vm.UserName|e }}
+        </a>
+        {{ vm.Body|e }}
+    </div>
+    <div>
+        <a href="{{ vm.StatusUrl }}">
+            {{ vm.CreatedAt|e }}
+        </a>
+    </div>
+</div>

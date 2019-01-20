@@ -5,6 +5,6 @@
 {% block content %}
 <h2>ホーム</h2>
 
-{% include "components/status_list.twig" with {statuses:[status]} %}
+{{ statusListItem.present | raw }}
 
 {% endblock %}

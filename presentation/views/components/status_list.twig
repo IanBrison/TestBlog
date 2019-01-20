@@ -1,19 +1,7 @@
 <div id="statuses">
-    {% if statuses|length > 0 %}
-    {% for status in statuses %}
-    <div class="status">
-        <div class="status_content">
-            <a href="/user/{{ status.user.name|e }}">
-                {{ status.user.name|e }}
-            </a>
-            {{ status.body|e }}
-        </div>
-        <div>
-            <a href="/status/{{ status.id }}">
-                {{ status.createdAt.showDateAndTime|e }}
-            </a>
-        </div>
-    </div>
+    {% if vm.hasStatuses %}
+    {% for statusListItem in vm.statusListItems %}
+        {{ statusListItem.present | raw }}
     {% endfor %}
     {% else %}
         <p>No statuses LOL</p>

@@ -15,6 +15,6 @@
 </form>
 {% endif %}
 
-{% include "components/status_list.twig" %}
+{{ statusList.present | raw }}
 
 {% endblock %}

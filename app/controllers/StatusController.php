@@ -13,6 +13,8 @@ use App\Repositories\UserRepository;
 use App\Repositories\FollowRepository;
 use Presentation\Models\Components\CsrfToken;
 use Presentation\Models\Components\ErrorList;
+use Presentation\Models\Components\StatusList;
+use Presentation\Models\Components\StatusListItem;
 
 class StatusController extends Controller {
 
@@ -20,12 +22,16 @@ class StatusController extends Controller {
         $session = Di::get(Session::class);
         $user = Di::get(AuthRepository::class)->user();
         $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
+        $statusListItems = array_map(function($status) {
+            return new StatusListItem($status);
+        }, $statuses);
+        $statusList = new StatusList($statusListItems);
 
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
         $body = $session->get('body');
         $csrf_view_model = new CsrfToken($this->generateCsrfToken('status/post'));
         $values = array(
-            'statuses' => $statuses,
+            'statusList' => $statusList,
             'error_list_view_model' => $error_list_view_model,
             'body' => $body,
             'csrf_view_model' => $csrf_view_model
@@ -69,6 +75,10 @@ class StatusController extends Controller {
         }
 
         $statuses = Di::get(StatusRepository::class)->fetchAllByUserId($user->id());
+        $statusListItems = array_map(function($status) {
+            return new StatusListItem($status);
+        }, $statuses);
+        $statusList = new StatusList($statusListItems);
 
         $is_following = null;
         $login_user = Di::get(AuthRepository::class)->user();
@@ -79,7 +89,7 @@ class StatusController extends Controller {
         $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/follow'));
         $values = array(
             'user' => $user,
-            'statuses' => $statuses,
+            'statusList' => $statusList,
             'is_following' => $is_following,
             'csrf_view_model' => $csrf_view_model
         );
@@ -89,9 +99,10 @@ class StatusController extends Controller {
     public function show($params) {
         $status_id = $params['id'];
         $status = Di::get(StatusRepository::class)->fetchById($status_id);
+        $statusListItem = new StatusListItem($status);
 
         $values = array(
-            'status' => $status,
+            'statusListItem' => $statusListItem,
         );
         return $this->render('status/show', $values);
     }
