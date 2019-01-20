@@ -39,12 +39,12 @@ class SelfUser implements User {
     }
 
     public function statuses(): array {
-        $this->statuses = $this->statuses ?? Di::get(StatusRepository::class)->fetchAllByUserId($this->id);
+        $this->statuses = $this->statuses ?? Di::get(StatusRepository::class)->fetchAllByUser($this);
         return $this->statuses;
     }
 
     public function personalStatuses(): array {
-        $this->personalStatuses = $this->personalStatuses ?? Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($this->id);
+        $this->personalStatuses = $this->personalStatuses ?? Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUser($this);
         return $this->personalStatuses;
     }
 

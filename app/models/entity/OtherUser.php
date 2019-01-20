@@ -38,7 +38,7 @@ class OtherUser implements User {
     }
 
     public function statuses(): array {
-        $this->statuses = $this->statuses ?? Di::get(StatusRepository::class)->fetchAllByUserId($this->id);
+        $this->statuses = $this->statuses ?? Di::get(StatusRepository::class)->fetchAllByUser($this);
         return $this->statuses;
     }
 

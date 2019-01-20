@@ -8,6 +8,7 @@ use Core\Datasource\DbDao;
 use Core\Exceptions\HttpNotFoundException;
 use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
+use App\Models\User;
 use App\Models\Status;
 use App\Models\ValueObject\NormalTimeStamp;
 use App\Models\Entity\PublicStatus;
@@ -34,7 +35,7 @@ class StatusDbDao extends DbDao implements StatusRepository {
         return new MyStatus($id, $body, $user_id, $created_at);
     }
 
-    public function fetchAllPersonalArchivesByUserId($user_id): array {
+    public function fetchAllPersonalArchivesByUser(User $user): array {
         $sql = "
             SELECT status.*
                 FROM status
@@ -44,9 +45,8 @@ class StatusDbDao extends DbDao implements StatusRepository {
                 ORDER BY created_at DESC
         ";
 
-        $rows = $this->fetchAll($sql, array(':user_id' => $user_id));
+        $rows = $this->fetchAll($sql, array(':user_id' => $user->id()));
 
-        $user = Di::get(AuthRepository::class)->user();
         $statuses = array();
         foreach ($rows as $row) {
             if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
@@ -58,7 +58,7 @@ class StatusDbDao extends DbDao implements StatusRepository {
         return $statuses;
     }
 
-    public function fetchAllByUserId($user_id): array {
+    public function fetchAllByUser(User $user): array {
         $sql = "
             SELECT *
                 FROM status
@@ -66,12 +66,11 @@ class StatusDbDao extends DbDao implements StatusRepository {
                 ORDER BY created_at DESC
         ";
 
-        $rows = $this->fetchAll($sql, array(':user_id' => $user_id));
+        $rows = $this->fetchAll($sql, array(':user_id' => $user->id()));
 
-        $user = Di::get(AuthRepository::class)->user();
         $statuses = array();
         foreach ($rows as $row) {
-            if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
+            if ($user->isSelf()) {
                 $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
             } else {
                 $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
