@@ -9,6 +9,7 @@ use Core\Exceptions\HttpNotFoundException;
 use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Models\Status;
+use App\Models\ValueObject\NormalTimeStamp;
 use App\Models\Entity\PublicStatus;
 use App\Models\Entity\MyStatus;
 
@@ -49,9 +50,9 @@ class StatusDbDao extends DbDao implements StatusRepository {
         $statuses = array();
         foreach ($rows as $row) {
             if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
-                $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+                $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
             } else {
-                $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+                $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
             }
         }
         return $statuses;
@@ -71,9 +72,9 @@ class StatusDbDao extends DbDao implements StatusRepository {
         $statuses = array();
         foreach ($rows as $row) {
             if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
-                $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+                $statuses[] = new MyStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
             } else {
-                $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+                $statuses[] = new PublicStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
             }
         }
         return $statuses;
@@ -95,8 +96,8 @@ class StatusDbDao extends DbDao implements StatusRepository {
 
         $user = Di::get(AuthRepository::class)->user();
         if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
-            return new MyStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+            return new MyStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
         }
-        return new PublicStatus($row['id'], $row['body'], $row['user_id'], $row['created_at']);
+        return new PublicStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
     }
 }

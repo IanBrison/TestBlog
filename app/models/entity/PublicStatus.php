@@ -5,6 +5,7 @@ namespace App\Models\Entity;
 use Core\Di\DiContainer as Di;
 use App\Models\Status;
 use App\Models\User;
+use App\Models\TimeStamp;
 use App\Repositories\UserRepository;
 
 class PublicStatus implements Status {
@@ -16,7 +17,7 @@ class PublicStatus implements Status {
 
     private $user;
 
-    public function __construct(int $id, string $body, string $user_id, string $created_at) {
+    public function __construct(int $id, string $body, string $user_id, TimeStamp $created_at) {
         $this->id = $id;
         $this->body = $body;
         $this->user_id = $user_id;
@@ -36,7 +37,7 @@ class PublicStatus implements Status {
         return $this->user;
     }
 
-    public function createdAt(): string {
+    public function createdAt(): TimeStamp {
         return $this->created_at;
     }
 

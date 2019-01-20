@@ -10,7 +10,7 @@ interface Status {
 
     public function user(): User;
 
-    public function createdAt(): string;
+    public function createdAt(): TimeStamp;
 
     public function isPostedBySelf(): bool;
 }
