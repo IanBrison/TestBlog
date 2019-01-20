@@ -11,21 +11,16 @@ use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\FollowRepository;
+use App\Services\StatusListService;
 use Presentation\Models\Components\CsrfToken;
 use Presentation\Models\Components\ErrorList;
-use Presentation\Models\Components\StatusList;
-use Presentation\Models\Components\StatusListItem;
 
 class StatusController extends Controller {
 
     public function index() {
         $session = Di::get(Session::class);
         $user = Di::get(AuthRepository::class)->user();
-        $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
-        $statusListItems = array_map(function($status) {
-            return new StatusListItem($status);
-        }, $statuses);
-        $statusList = new StatusList($statusListItems);
+        $statusList = Di::get(StatusListService::class)->createPersonalStatusListViewModel($user);
 
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
         $body = $session->get('body');
@@ -74,11 +69,7 @@ class StatusController extends Controller {
             throw new HttpNotFoundException("No user found with username `$user_name`");
         }
 
-        $statuses = Di::get(StatusRepository::class)->fetchAllByUserId($user->id());
-        $statusListItems = array_map(function($status) {
-            return new StatusListItem($status);
-        }, $statuses);
-        $statusList = new StatusList($statusListItems);
+        $statusList = Di::get(StatusListService::class)->createUsersStatusListViewModel($user);
 
         $is_following = null;
         $login_user = Di::get(AuthRepository::class)->user();
@@ -99,7 +90,7 @@ class StatusController extends Controller {
     public function show($params) {
         $status_id = $params['id'];
         $status = Di::get(StatusRepository::class)->fetchById($status_id);
-        $statusListItem = new StatusListItem($status);
+        $statusListItem = Di::get(StatusListService::class)->createStatusViewModel($status);
 
         $values = array(
             'statusListItem' => $statusListItem,
