@@ -26,6 +26,10 @@ class GuestUser implements User {
         throw new \Exception('No statuses for guest user');
     }
 
+    public function personalStatuses(): array {
+        throw new \Exception('No personal statuses for guest user');
+    }
+
     public function followings(): array {
         throw new \Exception('No followings for guest user');
     }

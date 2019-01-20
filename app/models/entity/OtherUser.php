@@ -42,6 +42,10 @@ class OtherUser implements User {
         return $this->statuses;
     }
 
+    public function personalStatuses(): array {
+        throw new \Exception('No personal statuses for other user');
+    }
+
     public function followings(): array {
         $this->followings = $this->followings ?? Di::get(FollowRepository::class)->getFollowings($this);
         return $this->followings;

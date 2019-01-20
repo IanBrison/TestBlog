@@ -12,7 +12,7 @@ use Presentation\Models\Components\StatusListItem;
 class StatusListService {
 
     public function createPersonalStatusListViewModel(User $user): StatusList {
-        $statuses = Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUserId($user->id());
+        $statuses = $user->personalStatuses();
         $statusListItems = array_map(function($status) {
             return new StatusListItem($status);
         }, $statuses);
@@ -20,7 +20,7 @@ class StatusListService {
     }
 
     public function createUsersStatusListViewModel(User $user): StatusList {
-        $statuses = Di::get(StatusRepository::class)->fetchAllByUserId($user->id());
+        $statuses = $user->statuses();
         $statusListItems = array_map(function($status) {
             return new StatusListItem($status);
         }, $statuses);

@@ -14,6 +14,8 @@ interface User {
 
     public function statuses(): array;
 
+    public function personalStatuses(): array;
+
     public function followings(): array;
 
     public function followers(): array;
