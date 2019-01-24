@@ -4,7 +4,6 @@ namespace Core\Controller;
 
 use Core\Di\DiContainer as Di;
 use Core\View\View;
-use Core\Session\Session;
 use Core\Response\Response;
 use Core\Response\StatusCode;
 use Core\Response\HttpHeader;
@@ -15,17 +14,15 @@ use Core\Exceptions\UnauthorizedActionException;
 
 abstract class Controller {
 
-    protected $controller_name;
-
-    protected $auth_actions = array();
+    protected $controllerName;
 
     public function __construct() {
-        $this->controller_name = get_class($this);
+        $this->controllerName = get_class($this);
     }
 
     public function run($method, $params = array()) {
         if (!method_exists($this, $method)) {
-            throw new HttpNotFoundException('Forwarded 404 page from ' . $this->controller_name . '/' . $method);
+            throw new HttpNotFoundException('Forwarded 404 page from ' . $this->controllerName . '/' . $method);
         }
 
         $content = $this->$method($params);
@@ -42,45 +39,14 @@ abstract class Controller {
             $request = Di::get(Request::class);
             $protocol = $request->isSsl() ? 'https://' : 'http://';
             $host = $request->getHost();
-            $base_url = $request->getBaseUrl();
+            $baseUrl = $request->getBaseUrl();
 
-            $url = $protocol . $host . $base_url . $url;
+            $url = $protocol . $host . $baseUrl . $url;
         }
 
-        $status_code = Di::get(StatusCode::class)->setCode(302)->setText('Found');
+        $statusCode = Di::get(StatusCode::class)->setCode(302)->setText('Found');
         $header = Di::get(HttpHeader::class)->setName('Location')->setValue($url);
-        $http_headers = Di::get(HttpHeaders::class)->addHeader($header);
-        Di::set(Response::class, Di::get(Response::class)->setStatusCode($status_code)->setHttpHeaders($http_headers));
-    }
-
-    protected function generateCsrfToken($form_name) {
-        $session = Di::get(Session::class);
-        $key = 'csrf_tokens/' . $form_name;
-        $tokens = $session->get($key, array());
-        if (count($tokens) >= 10) {
-            array_shift($tokens);
-        }
-
-        $token = sha1($form_name . session_id() . microtime());
-        $tokens[] = $token;
-
-        $session->set($key, $tokens);
-
-        return $token;
-    }
-
-    protected function checkCsrfToken($form_name, $token): bool {
-        $session = Di::get(Session::class);
-        $key = 'csrf_tokens/' . $form_name;
-        $tokens = $session->get($key, array());
-
-        if (false !== ($pos = array_search($token, $tokens, true))) {
-            unset($tokens[$pos]);
-            $session->set($key, $tokens);
-
-            return true;
-        }
-
-        return false;
+        $httpHeaders = Di::get(HttpHeaders::class)->addHeader($header);
+        Di::set(Response::class, Di::get(Response::class)->setStatusCode($statusCode)->setHttpHeaders($httpHeaders));
     }
 }
