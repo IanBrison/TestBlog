@@ -12,10 +12,6 @@ class OtherUser implements User {
     private $id;
     private $name;
 
-    private $statuses;
-    private $followings;
-    private $followers;
-
     public function __construct(int $id, string $name) {
         $this->id = $id;
         $this->name = $name;
@@ -38,8 +34,7 @@ class OtherUser implements User {
     }
 
     public function statuses(): array {
-        $this->statuses = $this->statuses ?? Di::get(StatusRepository::class)->fetchAllByUser($this);
-        return $this->statuses;
+        return Di::get(StatusRepository::class)->fetchAllByUser($this);
     }
 
     public function personalStatuses(): array {
@@ -47,12 +42,10 @@ class OtherUser implements User {
     }
 
     public function followings(): array {
-        $this->followings = $this->followings ?? Di::get(FollowRepository::class)->getFollowings($this);
-        return $this->followings;
+        return Di::get(FollowRepository::class)->getFollowings($this);
     }
 
     public function followers(): array {
-        $this->followers = $this->followers ?? Di::get(FollowRepository::class)->getFollowers($this);
-        return $this->followers;
+        return Di::get(FollowRepository::class)->getFollowers($this);
     }
 }
