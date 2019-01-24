@@ -32,7 +32,7 @@ class StatusDbDao extends DbDao implements StatusRepository {
         ));
 
         $id = $this->getLastInsertId();
-        return new MyStatus($id, $body, $user_id, $created_at);
+        return new MyStatus($id, $body, $user_id, NormalTimeStamp::constructFromString($created_at));
     }
 
     public function fetchAllPersonalArchivesByUser(User $user): array {
