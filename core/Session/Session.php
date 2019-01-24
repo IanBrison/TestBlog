@@ -63,14 +63,14 @@ class Session {
         return $this->set($name, $value);
     }
 
-    public function generateCsrfToken(string $postPath) {
-        $key = 'csrf_tokens/' . $postPath;
+    public function generateCsrfToken() {
+        $key = 'csrf_tokens';
         $tokens = $this->get($key, array());
         if (count($tokens) >= 10) {
             array_shift($tokens);
         }
 
-        $token = sha1($postPath . session_id() . microtime());
+        $token = sha1(session_id() . microtime());
         $tokens[] = $token;
 
         $this->set($key, $tokens);
@@ -78,8 +78,8 @@ class Session {
         return $token;
     }
 
-    public function checkCsrfToken(string $postPath, string $token): bool {
-        $key = 'csrf_tokens/' . $postPath;
+    public function checkCsrfToken(string $token): bool {
+        $key = 'csrf_tokens';
         $tokens = $this->get($key, array());
 
         if (false !== ($pos = array_search($token, $tokens, true))) {
