@@ -58,8 +58,7 @@ class StatusController extends Controller {
         return $this->redirect('/');
     }
 
-    public function user($params) {
-        $user_name = $params['user_name'];
+    public function user($user_name) {
         $user = Di::get(UserRepository::class)->fetchByUserName($user_name);
         if ($user->isGuest()) {
             throw new HttpNotFoundException("No user found with username `$user_name`");
@@ -83,8 +82,7 @@ class StatusController extends Controller {
         return $this->render('status/user', $values);
     }
 
-    public function show($params) {
-        $status_id = $params['id'];
+    public function show($status_id) {
         $status = Di::get(StatusRepository::class)->fetchById($status_id);
         $statusListItem = Di::get(StatusListService::class)->createStatusViewModel($status);
 
