@@ -5,7 +5,7 @@ use Core\Routing\Router;
 
 class Application extends BravelApplication {
 
-    protected $login_url = '/account/signin';
+    protected $loginUrl = '/account/signin';
 
     public function getRootDir() :string {
         return dirname(__FILE__);
