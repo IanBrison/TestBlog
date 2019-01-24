@@ -5,6 +5,7 @@ namespace App\Controllers;
 use Core\Di\DiContainer as Di;
 use Core\Request\Request;
 use Core\Session\Session;
+use Core\View\View;
 use Core\Controller\Controller;
 use Core\Exceptions\HttpNotFoundException;
 use App\Repositories\AuthRepository;
@@ -12,7 +13,6 @@ use App\Repositories\StatusRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\FollowRepository;
 use App\Services\StatusListService;
-use Presentation\Models\Components\CsrfToken;
 use Presentation\Models\Components\ErrorList;
 
 class StatusController extends Controller {
@@ -24,7 +24,7 @@ class StatusController extends Controller {
 
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
         $body = $session->get('body');
-        $csrf_view_model = new CsrfToken($this->generateCsrfToken('status/post'));
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/status/post');
         $values = array(
             'statusList' => $statusList,
             'error_list_view_model' => $error_list_view_model,
@@ -36,10 +36,6 @@ class StatusController extends Controller {
 
     public function post() {
         $request = Di::get(Request::class);
-        $token = $request->getPost('_token');
-        if (!$this->checkCsrfToken('status/post', $token)) {
-            return $this->redirect('/');
-        }
 
         $body = $request->getPost('body');
 
@@ -77,7 +73,7 @@ class StatusController extends Controller {
             $is_following = Di::get(FollowRepository::class)->isFollowing($login_user, $user);
         }
 
-        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/follow'));
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/account/follow');
         $values = array(
             'user' => $user,
             'statusList' => $statusList,

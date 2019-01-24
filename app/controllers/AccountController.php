@@ -5,11 +5,11 @@ namespace App\Controllers;
 use Core\Di\DiContainer as Di;
 use Core\Request\Request;
 use Core\Session\Session;
+use Core\View\View;
 use Core\Controller\Controller;
 use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\FollowRepository;
-use Presentation\Models\Components\CsrfToken;
 use Presentation\Models\Components\ErrorList;
 
 class AccountController extends Controller {
@@ -29,7 +29,7 @@ class AccountController extends Controller {
         $session = Di::get(Session::class);
         $user_name = $session->get('user_name');
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
-        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signin'));
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/account/signin');
         $values = array(
             'user_name' => $user_name,
             'error_list_view_model' => $error_list_view_model,
@@ -40,11 +40,6 @@ class AccountController extends Controller {
 
     public function attemptSignin() {
         $request = Di::get(Request::class);
-
-        $token = $request->getPost('_token');
-        if (!$this->checkCsrfToken('account/signin', $token)) {
-            return $this->redirect('/account/signin');
-        }
 
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
@@ -67,7 +62,7 @@ class AccountController extends Controller {
         $session = Di::get(Session::class);
         $user_name = $session->get('user_name');
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
-        $csrf_view_model = new CsrfToken($this->generateCsrfToken('account/signup'));
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/account/signup');
         $values = array(
             'user_name' => $user_name,
             'error_list_view_model' => $error_list_view_model,
@@ -78,11 +73,6 @@ class AccountController extends Controller {
 
     public function register() {
         $request = Di::get(Request::class);
-
-        $token = $request->getPost('_token');
-        if (!$this->checkCsrfToken('account/signup', $token)) {
-            return $this->redirect('/account/signup');
-        }
 
         $user_name = $request->getPost('user_name');
         $password = $request->getPost('password');
@@ -125,11 +115,6 @@ class AccountController extends Controller {
 
     public function follow() {
         $request = Di::get(Request::class);
-
-        $token = $request->getPost('_token');
-        if (!$this->checkCsrfToken('account/follow', $token)) {
-            return $this->redirect('/account/follow');
-        }
 
         $user_to_be_followed = Di::get(UserRepository::class)->fetchById($request->getPost('following_user_id'));
         if ($user_to_be_followed->isGuest()) {
