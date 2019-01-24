@@ -8,9 +8,9 @@ use Core\Datasource\DbDao;
 use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
 use App\Models\User;
-use App\Models\Entity\SelfUser;
-use App\Models\Entity\OtherUser;
-use App\Models\Entity\GuestUser;
+use App\Models\Entity\User\SelfUser;
+use App\Models\Entity\User\OtherUser;
+use App\Models\Entity\User\GuestUser;
 
 class UserDbDao extends DbDao implements UserRepository {
 

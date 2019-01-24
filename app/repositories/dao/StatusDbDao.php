@@ -10,9 +10,9 @@ use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Models\User;
 use App\Models\Status;
+use App\Models\Entity\Status\PublicStatus;
+use App\Models\Entity\Status\MyStatus;
 use App\Models\ValueObject\NormalTimeStamp;
-use App\Models\Entity\PublicStatus;
-use App\Models\Entity\MyStatus;
 
 class StatusDbDao extends DbDao implements StatusRepository {
 

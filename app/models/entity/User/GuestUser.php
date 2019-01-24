@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Entity;
+namespace App\Models\Entity\User;
 
 use App\Models\User;
 

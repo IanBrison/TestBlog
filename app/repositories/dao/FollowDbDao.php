@@ -7,8 +7,8 @@ use Core\Datasource\DbDao;
 use App\Repositories\AuthRepository;
 use App\Repositories\FollowRepository;
 use App\Models\User;
-use App\Models\Entity\SelfUser;
-use App\Models\Entity\OtherUser;
+use App\Models\Entity\User\SelfUser;
+use App\Models\Entity\User\OtherUser;
 
 class FollowDbDao extends DbDao implements FollowRepository {
 

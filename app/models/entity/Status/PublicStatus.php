@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Entity;
+namespace App\Models\Entity\Status;
 
 use Core\Di\DiContainer as Di;
 use App\Models\Status;

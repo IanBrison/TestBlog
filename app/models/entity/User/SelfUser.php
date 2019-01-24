@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\Entity;
+namespace App\Models\Entity\User;
 
 use Core\Di\DiContainer as Di;
 use App\Models\User;
 use App\Repositories\StatusRepository;
 use App\Repositories\FollowRepository;
 
-class OtherUser implements User {
+class SelfUser implements User {
 
     private $id;
     private $name;
@@ -26,7 +26,7 @@ class OtherUser implements User {
     }
 
     public function isSelf(): bool {
-        return false;
+        return true;
     }
 
     public function isGuest(): bool {
@@ -38,7 +38,7 @@ class OtherUser implements User {
     }
 
     public function personalStatuses(): array {
-        throw new \Exception('No personal statuses for other user');
+        return Di::get(StatusRepository::class)->fetchAllPersonalArchivesByUser($this);
     }
 
     public function followings(): array {

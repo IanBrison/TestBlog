@@ -7,7 +7,7 @@ use Core\Session\Session;
 use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
 use App\Models\User;
-use App\Models\Entity\GuestUser;
+use App\Models\Entity\User\GuestUser;
 
 class AuthDao implements AuthRepository {
 
