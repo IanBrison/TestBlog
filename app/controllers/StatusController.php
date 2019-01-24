@@ -24,7 +24,7 @@ class StatusController extends Controller {
 
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
         $body = $session->get('body');
-        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/status/post');
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel();
         $values = array(
             'statusList' => $statusList,
             'error_list_view_model' => $error_list_view_model,
@@ -73,7 +73,7 @@ class StatusController extends Controller {
             $is_following = Di::get(FollowRepository::class)->isFollowing($login_user, $user);
         }
 
-        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/account/follow');
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel();
         $values = array(
             'user' => $user,
             'statusList' => $statusList,

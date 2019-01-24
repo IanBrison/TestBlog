@@ -29,7 +29,7 @@ class AccountController extends Controller {
         $session = Di::get(Session::class);
         $user_name = $session->get('user_name');
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
-        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/account/signin');
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel();
         $values = array(
             'user_name' => $user_name,
             'error_list_view_model' => $error_list_view_model,
@@ -62,7 +62,7 @@ class AccountController extends Controller {
         $session = Di::get(Session::class);
         $user_name = $session->get('user_name');
         $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
-        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel('/account/signup');
+        $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel();
         $values = array(
             'user_name' => $user_name,
             'error_list_view_model' => $error_list_view_model,
