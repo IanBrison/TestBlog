@@ -1,4 +1,5 @@
 <?php
+
 /*
  * config file for di container
  * singletons are instances that are to be saved when they are constructed
@@ -10,6 +11,7 @@ return [
         Core\Response\Response::class,
         Core\Session\Session::class,
         Core\Datasource\DbManager::class,
+        Core\Datasource\GhostDbDao::class,
         Core\Routing\Router::class,
     ],
 
