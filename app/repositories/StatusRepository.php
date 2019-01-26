@@ -7,7 +7,7 @@ use App\Models\Status;
 
 interface StatusRepository {
 
-    public function insert($user_id, $body): Status;
+    public function insert(User $user, $body): Status;
 
     public function fetchAllPersonalArchivesByUser(User $user): array;
 

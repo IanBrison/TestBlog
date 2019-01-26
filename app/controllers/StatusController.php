@@ -48,7 +48,7 @@ class StatusController extends Controller {
 
         $user = Di::get(AuthRepository::class)->user();
         if (!$error_list_view_model->hasErrors()) {
-            $status = Di::get(StatusRepository::class)->insert($user->id(), $body);
+            $status = Di::get(StatusRepository::class)->insert($user, $body);
             return $this->redirect('/');
         }
 

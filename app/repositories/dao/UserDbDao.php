@@ -8,6 +8,7 @@ use Core\Datasource\DbDao;
 use App\Repositories\AuthRepository;
 use App\Repositories\UserRepository;
 use App\Models\User;
+use App\Models\Entity\User\GhostUser;
 use App\Models\Entity\User\SelfUser;
 use App\Models\Entity\User\OtherUser;
 use App\Models\Entity\User\GuestUser;
@@ -36,15 +37,18 @@ class UserDbDao extends DbDao implements UserRepository {
 
         $row = $this->fetch($sql, array(':user_name' => $user_name));
 
-        return $this->constructUserFromRow($row);
+        if ($row === false) {
+            return new GuestUser();
+        }
+        $user = Di::get(AuthRepository::class)->user();
+        if ($user->isSelf() && $user->id() === (int)$row['id']) {
+            return new SelfUser($row['id'], $row['user_name']);
+        }
+        return new OtherUser($row['id'], $row['user_name']);
     }
 
     public function fetchById($id): User {
-        $sql = "SELECT * FROM user WHERE id = :id";
-
-        $row = $this->fetch($sql, array(':id' => $id));
-
-        return $this->constructUserFromRow($row);
+        return new GhostUser($id);
     }
 
     public function isUniqueUserName($user_name): bool {
@@ -72,16 +76,5 @@ class UserDbDao extends DbDao implements UserRepository {
 
     protected function hashPassword($password) {
         return sha1($password . 'SecretKey');
-    }
-
-    private function constructUserFromRow($row) {
-        if ($row === false) {
-            return new GuestUser();
-        }
-        $user = Di::get(AuthRepository::class)->user();
-        if ($user->isSelf() && $user->id() === (int)$row['id']) {
-            return new SelfUser($row['id'], $row['user_name']);
-        }
-        return new OtherUser($row['id'], $row['user_name']);
     }
 }

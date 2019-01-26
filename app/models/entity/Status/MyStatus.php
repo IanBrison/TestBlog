@@ -12,13 +12,13 @@ class MyStatus implements Status {
 
     private $id;
     private $body;
-    private $user_id;
+    private $user;
     private $created_at;
 
-    public function __construct(int $id, string $body, string $user_id, TimeStamp $created_at) {
+    public function __construct(int $id, string $body, User $user, TimeStamp $created_at) {
         $this->id = $id;
         $this->body = $body;
-        $this->user_id = $user_id;
+        $this->user = $user;
         $this->created_at = $created_at;
     }
 
@@ -31,7 +31,7 @@ class MyStatus implements Status {
     }
 
     public function user(): User {
-        return Di::get(UserRepository::class)->fetchById($this->user_id);
+        return $this->user;
     }
 
     public function createdAt(): TimeStamp {
