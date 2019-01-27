@@ -6,6 +6,7 @@ use Core\Di\DiContainer as Di;
 use Core\Datasource\GhostEntity;
 use App\Repositories\AuthRepository;
 use App\Models\User;
+use App\Models\Entity\User\GhostUser;
 use App\Models\Status;
 use App\Models\TimeStamp;
 use App\Models\Entity\Status\PublicStatus;
@@ -57,8 +58,8 @@ class GhostStatus extends GhostEntity implements Status {
 
         $user = Di::get(AuthRepository::class)->user();
         if ($user->isSelf() && $user->id() === (int)$row['user_id']) {
-            return new MyStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
+            return new MyStatus($row['id'], $row['body'], new GhostUser($row['user_id']), NormalTimeStamp::constructFromString($row['created_at']));
         }
-        return new PublicStatus($row['id'], $row['body'], $row['user_id'], NormalTimeStamp::constructFromString($row['created_at']));
+        return new PublicStatus($row['id'], $row['body'], new GhostUser($row['user_id']), NormalTimeStamp::constructFromString($row['created_at']));
     }
 }
