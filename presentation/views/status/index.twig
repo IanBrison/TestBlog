@@ -7,15 +7,7 @@
 
 {{ error_list_view_model.present | raw }}
 
-<form action="/status/post" method="post">
-    {{ csrf_view_model.present | raw }}
-
-    <textarea name="body" rows="2" cols="60">{{ body|e }}</textarea>
-
-    <p>
-        <input type="submit" value="発言" />
-    </p>
-</form>
+{{ statusPostForm.present | raw }}
 
 {{ statusList.present | raw }}
 

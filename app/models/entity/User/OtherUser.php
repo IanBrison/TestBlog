@@ -6,6 +6,7 @@ use Core\Di\DiContainer as Di;
 use App\Models\User;
 use App\Repositories\StatusRepository;
 use App\Repositories\FollowRepository;
+use App\Repositories\ImageRepository;
 
 class OtherUser implements User {
 
@@ -47,5 +48,9 @@ class OtherUser implements User {
 
     public function followers(): array {
         return Di::get(FollowRepository::class)->getFollowers($this);
+    }
+
+    public function images(): array {
+        return Di::get(ImageRepository::class)->fetchAllByUser($this);
     }
 }

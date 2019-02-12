@@ -6,7 +6,7 @@ use Core\Di\DiContainer as Di;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\TimeStamp;
-use App\Repositories\UserRepository;
+use App\Repositories\ImageRepository;
 
 class PublicStatus implements Status {
 
@@ -40,5 +40,9 @@ class PublicStatus implements Status {
 
     public function isPostedBySelf(): bool {
         return true;
+    }
+
+    public function images(): array {
+        return Di::get(ImageRepository::class)->fetchAllByStatus($this);
     }
 }

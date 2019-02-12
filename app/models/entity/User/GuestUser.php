@@ -37,4 +37,8 @@ class GuestUser implements User {
     public function followers(): array {
         throw new \Exception('No followers for guest user');
     }
+
+    public function images(): array {
+        throw new \Exception('No images for guest user');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Models\Entity\Status;
 use Core\Di\DiContainer as Di;
 use Core\Datasource\GhostEntity;
 use App\Repositories\AuthRepository;
+use App\Repositories\ImageRepository;
 use App\Models\User;
 use App\Models\Entity\User\GhostUser;
 use App\Models\Status;
@@ -40,6 +41,10 @@ class GhostStatus extends GhostEntity implements Status {
 
     public function isPostedBySelf(): bool {
         return $this->realize()->isPostedBySelf();
+    }
+
+    public function images(): array {
+        return Di::get(ImageRepository::class)->fetchAllByStatus($this);
     }
 
     public function realizeQuery(): string {

@@ -6,6 +6,11 @@
         {{ vm.Body|e }}
     </div>
     <div>
+        {% for image in vm.Images %}
+            <img src="{{ image.url }}">
+        {% endfor %}
+    </div>
+    <div>
         <a href="{{ vm.StatusUrl }}">
             {{ vm.CreatedAt|e }}
         </a>

@@ -11,6 +11,7 @@ use App\Models\Entity\User\GuestUser;
 use App\Repositories\AuthRepository;
 use App\Repositories\StatusRepository;
 use App\Repositories\FollowRepository;
+use App\Repositories\ImageRepository;
 
 class GhostUser extends GhostEntity implements User {
 
@@ -51,6 +52,10 @@ class GhostUser extends GhostEntity implements User {
 
     public function followers(): array {
         return Di::get(FollowRepository::class)->getFollowers($this);
+    }
+
+    public function images(): array {
+        return Di::get(ImageRepository::class)->fetchAllByUser($this);
     }
 
     public function realizeQuery(): string {

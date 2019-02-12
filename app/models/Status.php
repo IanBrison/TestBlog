@@ -13,4 +13,6 @@ interface Status {
     public function createdAt(): TimeStamp;
 
     public function isPostedBySelf(): bool;
+
+    public function images(): array;
 }

@@ -21,5 +21,6 @@ return [
         App\Repositories\UserRepository::class => App\Repositories\Dao\UserDbDao::class,
         App\Repositories\StatusRepository::class => App\Repositories\Dao\StatusDbDao::class,
         App\Repositories\FollowRepository::class => App\Repositories\Dao\FollowDbDao::class,
+        App\Repositories\ImageRepository::class => App\Repositories\Dao\ImageDbDao::class,
     ]
 ];

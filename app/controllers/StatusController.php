@@ -13,48 +13,39 @@ use App\Repositories\StatusRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\FollowRepository;
 use App\Services\StatusListService;
+use App\Services\Usecase\CreateStatus;
 use Presentation\Models\Components\ErrorList;
 
 class StatusController extends Controller {
 
     public function index() {
-        $session = Di::get(Session::class);
         $user = Di::get(AuthRepository::class)->user();
         $statusList = Di::get(StatusListService::class)->createPersonalStatusListViewModel($user);
+        $createStatusService = new CreateStatus();
+        $statusPostForm = $createStatusService->generatePostFormViewModel();
 
-        $error_list_view_model = $session->get('error_list_view_model', new ErrorList());
-        $body = $session->get('body');
+        $error_list_view_model = Di::get(Session::class)->get('error_list_view_model', new ErrorList());
         $csrf_view_model = Di::get(View::class)->generateCsrfTokenViewModel();
         $values = array(
             'statusList' => $statusList,
+            'statusPostForm' => $statusPostForm,
             'error_list_view_model' => $error_list_view_model,
-            'body' => $body,
             'csrf_view_model' => $csrf_view_model
         );
         return $this->render('status/index', $values);
     }
 
     public function post() {
-        $request = Di::get(Request::class);
-
-        $body = $request->getPost('body');
-
-        $error_list_view_model = new ErrorList();
-        if (!strlen($body)) {
-            $error_list_view_model->addError('ひとことを入力してください');
-        } else if (mb_strlen($body) > 200) {
-            $error_list_view_model->addError('ひとことは200文字以内で入力してください');
-        }
-
-        $user = Di::get(AuthRepository::class)->user();
-        if (!$error_list_view_model->hasErrors()) {
-            $status = Di::get(StatusRepository::class)->insert($user, $body);
+        $createStatusService = new CreateStatus();
+        if ($createStatusService->createFromPost()) {
             return $this->redirect('/');
         }
 
-        $session = Di::get(Session::class);
-        $session->oneTimeSet('body', $body);
-        $session->oneTimeSet('error_list_view_model', $error_list_view_model);
+        $error_list_view_model = new ErrorList();
+        foreach ($createStatusService->retrieveErrors() as $error) {
+            $error_list_view_model->addError($error);
+        }
+        Di::get(Session::class)->oneTimeSet('error_list_view_model', $error_list_view_model);
         return $this->redirect('/');
     }
 

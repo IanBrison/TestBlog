@@ -23,6 +23,10 @@ class StatusListItem extends ViewModel {
         return $this->status->body();
     }
 
+    public function getImages(): array {
+        return $this->status->images();
+    }
+
     public function getCreatedAt(): string {
         return $this->status->createdAt()->showDate();
     }

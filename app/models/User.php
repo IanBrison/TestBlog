@@ -19,4 +19,6 @@ interface User {
     public function followings(): array;
 
     public function followers(): array;
+
+    public function images(): array;
 }

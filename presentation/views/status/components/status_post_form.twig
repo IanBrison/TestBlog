@@ -1,0 +1,10 @@
+<form action="/status/post" method="post" enctype="multipart/form-data">
+    {{ vm.csrfViewModel.present | raw }}
+
+    <textarea name="{{ vm.bodyFormName }}" rows="2" cols="60">{{ vm.bodyPreserved | e }}</textarea>
+    <input type="file" name="{{ vm.imageFormName }}">
+
+    <p>
+        <input type="submit" value="発言" />
+    </p>
+</form>
