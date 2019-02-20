@@ -57,18 +57,23 @@ abstract class BravelApplication {
     // return the absolute RootDir Path for configuring relative Paths
     abstract public function getRootDir(): string;
 
+    // declare routes in the array which you want to register
     abstract protected function registerRoutes(): array;
 
+    // configure things for the qpplication at the beginning
     abstract protected function configure();
 
+    // return if the application is in debug mode
     public function isDebugMode(): bool {
         return $this->debug;
     }
 
+    // return the url to redirect when not authorized
     public function getLoginUrl(): string {
         return $this->loginUrl;
     }
 
+    // return the controllers base namespace for concatenating the class name
     public function getControllerDirNamespace(): string {
         return $this->controllerDirNamespace;
     }
