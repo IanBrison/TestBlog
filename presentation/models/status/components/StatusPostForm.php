@@ -14,6 +14,7 @@ class StatusPostForm extends ViewModel {
 
     const BODY_FORM_NAME = 'body';
     const IMAGE_FORM_NAME = 'image';
+    const PRESERVED_BODY_SESSION_KEY = 'preservedBody';
 
     protected $template = 'status/components/status_post_form';
 
@@ -22,7 +23,7 @@ class StatusPostForm extends ViewModel {
     }
 
     public function bodyPreserved(): string {
-        return Di::get(Session::class)->get('preservedBody', '');
+        return Di::get(Session::class)->get(self::PRESERVED_BODY_SESSION_KEY, '');
     }
 
     public function bodyFormName(): string {
@@ -34,7 +35,7 @@ class StatusPostForm extends ViewModel {
     }
 
     public function preserveBody($body) {
-        Di::get(Session::class)->oneTimeSet('preservedBody', $body);
+        Di::get(Session::class)->oneTimeSet(self::PRESERVED_BODY_SESSION_KEY, $body);
     }
 
     public function retrieveBody(): string {
