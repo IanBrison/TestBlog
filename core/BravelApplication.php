@@ -18,6 +18,7 @@ use Core\Exceptions\BravelExceptionHandler;
 abstract class BravelApplication {
 
     protected $debug = false;
+    protected $loginUrl = '/login';
     protected $controllerDirNamespace = 'App\\Controllers\\';
     protected $configPath = '/config';
 
@@ -78,6 +79,7 @@ abstract class BravelApplication {
         return $this->controllerDirNamespace;
     }
 
+    // return the configuration path for configuring the application's settings
     public function getConfigPath(): string {
         return $this->configPath;
     }
@@ -98,7 +100,7 @@ abstract class BravelApplication {
         Di::get(Response::class)->send();
     }
 
-    public function runAction(Action $action) {
+    protected function runAction(Action $action) {
         $controllerClass = $this->getControllerDirNamespace() . $action->getController();
 
         $controller = new $controllerClass();
