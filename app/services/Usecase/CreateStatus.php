@@ -19,7 +19,7 @@ class CreateStatus {
     }
 
     public function createFromPost(): bool {
-        $statusPostFormViewModel = new StatusPostForm();
+        $statusPostFormViewModel = Di::get(StatusPostForm::class);
         $body = $statusPostFormViewModel->retrieveBody();
         $image = $statusPostFormViewModel->retrieveImage();
         $user = Di::get(AuthRepository::class)->user();
@@ -49,7 +49,7 @@ class CreateStatus {
     }
 
     public function generatePostFormViewModel(): StatusPostForm {
-        return new StatusPostForm();
+        return Di::get(StatusPostForm::class);
     }
 
     public function retrieveErrors(): array {

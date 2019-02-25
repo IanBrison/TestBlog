@@ -14,20 +14,20 @@ class StatusListService {
     public function createPersonalStatusListViewModel(User $user): StatusList {
         $statuses = $user->personalStatuses();
         $statusListItems = array_map(function($status) {
-            return new StatusListItem($status);
+            return Di::get(StatusListItem::class, $status);
         }, $statuses);
-        return new StatusList($statusListItems);
+        return Di::get(StatusList::class, $statusListItems);
     }
 
     public function createUsersStatusListViewModel(User $user): StatusList {
         $statuses = $user->statuses();
         $statusListItems = array_map(function($status) {
-            return new StatusListItem($status);
+            return Di::get(StatusListItem::class, $status);
         }, $statuses);
-        return new StatusList($statusListItems);
+        return Di::get(StatusList::class, $statusListItems);
     }
 
     public function createStatusViewModel(Status $status): StatusListItem {
-        return new StatusListItem($status);
+        return Di::get(StatusListItem::class, $status);
     }
 }
